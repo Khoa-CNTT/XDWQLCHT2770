@@ -5,13 +5,13 @@ export default [
       component: () => import('../layouts/LayoutAdmin/index.vue'), // Layout chính của Admin
       children:[
         {
-          path: 'home',
-          name: 'AdminHome',
-          component: () => import('../pages/pageAdmin/Home.vue'),
+          path: '/dashboard',
+          name: 'AdminDashBoard',
+          component: () => import('../pages/pageAdmin/DashBoard.vue'),
         },
         {
           path: '',
-          redirect: { name: 'AdminHome' },
+          redirect: { name: 'AdminDashBoard' },
         },
       ],
     },
