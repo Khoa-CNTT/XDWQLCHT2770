@@ -1,5 +1,8 @@
-<template  >
-   <router-view></router-view>
+
+<template>
+
+        <router-view></router-view>
+
 </template>
 <script>
 import "./assets/js/bootstrap.bundle.min.js"
@@ -9,6 +12,8 @@ import "./assets/plugins/metismenu/js/metisMenu.min.js"
 import "./assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"
 import "./assets/js/index.js"
 import "./assets/js/app.js"
+import "./assets/plugins/chartjs/js/Chart.min.js"
+import "./assets/plugins/chartjs/js/chartjs-custom.js"
 
 export default {
     

@@ -1,6 +1,6 @@
 <template >
     <div>
-        đây là trang quản lý phòng
+        Đây là trang chi tiết phòng
     </div>
 </template>
 <script>
