@@ -1,5 +1,6 @@
 export default [
   {
+    //admin
     path: "/",
     component: () => import("../layouts/LayoutUser/index.vue"), // Layout chính của User
     children: [

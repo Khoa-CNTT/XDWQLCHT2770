@@ -115,6 +115,12 @@
               <div class="menu-title">Rooms</div>
             </a></router-link>
           </li>
+          <li class="nav-item">
+           <router-link to="/admin/posts"> <a class="nav-link">
+              <div class="parent-icon"><i class="bx bx-cookie"></i></div>
+              <div class="menu-title">Bài viết</div>
+            </a></router-link>
+          </li>
         </ul>
       </nav>
     </div>
