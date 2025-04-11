@@ -25,7 +25,17 @@ export default [
       {
         path: "roomdetail",
         name: "RoomDetail" ,
-        component: () => import("../pages/PageUser/RoomDetails.vue"),
+        component: () => import("../pages/pageUser/RoomDetails.vue"),
+      },
+      {
+        path: "login",
+        name: "Login" ,
+        component: () => import("../pages/PageUser/Login.vue"),
+      },
+      {
+        path: "register",
+        name: "Register" ,
+        component: () => import("../pages/PageUser/Register.vue"),
       },
     ],
   },
