@@ -25,7 +25,7 @@ export default [
       {
         path: "roomdetail",
         name: "RoomDetail" ,
-        component: () => import("../pages/pageUser/RoomDetails.vue"),
+        component: () => import("../pages/PageUser/RoomDetails.vue"),
       },
     ],
   },
