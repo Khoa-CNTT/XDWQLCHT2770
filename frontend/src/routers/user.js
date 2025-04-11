@@ -15,7 +15,9 @@ export default [
       },
       {
         path: "post",
+
         name: "Post",
+
         component: () => import("../pages/PageUser/Post.vue"),
       },
       {
@@ -28,6 +30,7 @@ export default [
         name: "RoomDetail",
         component: () => import("../pages/pageUser/RoomDetails.vue"),
       },
+
       {
         path: "login",
         name: "Login",
@@ -44,6 +47,8 @@ export default [
         component: () => import("../pages/pageUser/PostDetails.vue"), 
       },
       
+
+
     ],
   },
 ];
