@@ -7,7 +7,7 @@ export default [
       {
         path: "home",
         name: "Home",
-        component: () => import("../pages/pageUser/home.vue"),
+        component: () => import("../pages/PageUser/Home.vue"),
       },
       {
         path: "",
@@ -15,20 +15,35 @@ export default [
       },
       {
         path: "post",
-        name: "Post" ,
-        component: () => import("../pages/pageUser/Post.vue"),
+        name: "Post",
+        component: () => import("../pages/PageUser/Post.vue"),
       },
       {
         path: "room",
-        name: "Room" ,
+        name: "Room",
         component: () => import("../pages/pageUser/Rooms.vue"),
       },
       {
         path: "roomdetail",
-        name: "RoomDetail" ,
+        name: "RoomDetail",
         component: () => import("../pages/pageUser/RoomDetails.vue"),
       },
-      // user
+      {
+        path: "login",
+        name: "Login",
+        component: () => import("../pages/pageUser/Login.vue"),
+      },
+      {
+        path: "register",
+        name: "Register",
+        component: () => import("../pages/pageUser/Register.vue"),
+      },
+      {
+        path: "postdetail",
+        name: "PostDetail",
+        component: () => import("../pages/pageUser/PostDetails.vue"), 
+      },
+      
     ],
   },
 ];
