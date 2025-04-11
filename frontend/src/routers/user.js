@@ -28,12 +28,6 @@ export default [
         component: () => import("../pages/pageUser/RoomDetails.vue"),
       },
 
-      {
-        path: "postdetails",
-        name: "PostDetails" ,
-        component: () => import("../pages/PageUser/PostDetails.vue"),
-      },
-
     ],
   },
 ];
