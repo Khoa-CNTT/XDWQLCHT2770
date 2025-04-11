@@ -15,7 +15,7 @@ export default [
       {
         path: "post",
         name: "Post" ,
-        component: () => import("../pages/pageUser/Post.vue"),
+        component: () => import("../pages/PageUser/Post.vue"),
       },
       {
         path: "room",
@@ -27,16 +27,7 @@ export default [
         name: "RoomDetail" ,
         component: () => import("../pages/pageUser/RoomDetails.vue"),
       },
-      {
-        path: "login",
-        name: "Login" ,
-        component: () => import("../pages/PageUser/Login.vue"),
-      },
-      {
-        path: "register",
-        name: "Register" ,
-        component: () => import("../pages/PageUser/Register.vue"),
-      },
+
     ],
   },
 ];
