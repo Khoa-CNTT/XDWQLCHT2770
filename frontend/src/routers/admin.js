@@ -38,6 +38,11 @@ export default [
         name: "Booking",
         component: () => import("../pages/pageAdmin/Bookings.vue"),
       },
+      {
+        path: "posts",
+        name: "Posts",
+        component: () => import("../pages/pageAdmin/Posts.vue"),
+      },
     ],
   },
 ];

@@ -1,6 +1,6 @@
 <template >
     <div>
-        Đây là footer
+        Đây là footer 
     </div>
 </template>
 <script>

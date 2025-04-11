@@ -1,5 +1,6 @@
 export default [
   {
+    //admin
     path: "/",
     component: () => import("../layouts/LayoutUser/index.vue"), // Layout chính của User
     children: [
@@ -27,6 +28,7 @@ export default [
         name: "RoomDetail" ,
         component: () => import("../pages/pageUser/RoomDetails.vue"),
       },
+      // user
     ],
   },
 ];
