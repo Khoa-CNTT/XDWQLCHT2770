@@ -6,7 +6,7 @@ export default [
       {
         path: "home",
         name: "Home",
-        component: () => import("../pages/pageUser/home.vue"),
+        component: () => import("../pages/PageUser/Home.vue"),
       },
       {
         path: "",
