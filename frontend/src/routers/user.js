@@ -24,6 +24,7 @@ export default [
         component: () => import("../pages/pageUser/Rooms.vue"),
       },
       {
+
         path: "roomdetail",
         name: "RoomDetail",
         component: () => import("../pages/pageUser/RoomDetails.vue"),
@@ -44,6 +45,17 @@ export default [
         component: () => import("../pages/pageUser/PostDetails.vue"), 
       },
       {
+
+        path: "profile",
+        name: "Profile",
+        component: () => import("../pages/pageUser/Profile.vue"), 
+      },
+      {
+        path: "roomsearch",
+        name: "RoomSearch",
+        component: () => import("../pages/pageUser/Roomsearch.vue"), 
+      },
+      {
         path: "login",
         name: "Login",
         component: () => import("../pages/pageUser/Login.vue"),
@@ -58,6 +70,7 @@ export default [
         name: "PostDetail",
         component: () => import("../pages/pageUser/PostDetails.vue"), 
       },
+
     ],
   },
 ];

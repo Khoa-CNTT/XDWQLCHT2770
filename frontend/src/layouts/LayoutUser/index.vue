@@ -1,7 +1,9 @@
 <template >
-    <div>
+    <div >
       <TheHeader></TheHeader>
-    <router-view></router-view>
+    <ChatBot></ChatBot>
+    <router-view ></router-view>
+
     <TheFooter></TheFooter>
     </div>
   </template>
@@ -9,11 +11,13 @@
 
 import TheHeader from "../../components/User/TheHeader.vue";
 import TheFooter from "../../components/User/TheFooter.vue";
+import ChatBot from "../../components/User/ChatBot.vue";
 
   export default {
       components:{
           TheHeader,
-          TheFooter
+          TheFooter,
+          ChatBot
       }
   }
   </script>

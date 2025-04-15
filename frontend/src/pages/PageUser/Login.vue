@@ -41,7 +41,7 @@
                                              </div>
                                              <div class="col-12">
                                                  <div class="d-grid">
-                                                     <button type="submit" class="btn btn-primary"><i class="bx bxs-lock-open"></i>Đăng nhập</button>
+                                                     <router-link to="/"><button type="submit" class="btn btn-primary w-100"><i class="bx bxs-lock-open"></i>Đăng nhập</button></router-link>
                                                  </div>
                                              </div>
                                          </form>
