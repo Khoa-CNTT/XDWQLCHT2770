@@ -18,15 +18,11 @@ export default [
         name: "Post",
         component: () => import("../pages/PageUser/Post.vue"),
       },
-      {
-        path: "room",
-        name: "Room",
-        component: () => import("../pages/pageUser/Rooms.vue"),
-      },
+
       {
         path: "roomdetail",
         name: "RoomDetail",
-        component: () => import("../pages/pageUser/RoomDetails.vue"),
+        component: () => import("../pages/PageUser/RoomDetails.vue"),
       },
       {
         path: "login",
