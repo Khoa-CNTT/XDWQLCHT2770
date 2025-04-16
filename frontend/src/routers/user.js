@@ -1,8 +1,7 @@
 export default [
   {
-    //admin
     path: "/",
-    component: () => import("../layouts/LayoutUser/index.vue"), // Layout chính của User
+    component: () => import("../layouts/LayoutUser/index.vue"),
     children: [
       {
         path: "home",
@@ -40,20 +39,22 @@ export default [
         component: () => import("../pages/pageUser/PostDetails.vue"), 
       },
       {
-        path: "login",
-        name: "Login",
-        component: () => import("../pages/pageUser/Login.vue"),
+        path: "profile",
+        name: "Profile",
+        component: () => import("../pages/pageUser/Profile.vue"), 
       },
       {
-        path: "register",
-        name: "Register",
-        component: () => import("../pages/pageUser/Register.vue"),
+        path: "roomsearch",
+        name: "RoomSearch",
+        component: () => import("../pages/pageUser/Roomsearch.vue"), 
       },
+
       {
         path: "postdetail",
         name: "PostDetail",
         component: () => import("../pages/pageUser/PostDetails.vue"), 
       },
+
     ],
   },
 ];

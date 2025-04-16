@@ -1,5 +1,5 @@
 <template>
-  <div class="container bg-primary-dark p-2 my-4 rounded" style="max-width: 1000px;">
+  <div class="container bg-primary-dark p-2 mb-4 rounded " style="max-width: 900px;">
     <form @submit.prevent="searchRooms">
       <div class="row g-2 align-items-center">
         <!-- Điểm đến -->
@@ -7,7 +7,7 @@
           <div class="input-group bg-white rounded align-items-center h-100" style="max-height: 50px;">
             <label class="p-2 fs-4"><i class="fa-solid fa-location-dot"></i></label>
             <select
-              class="form-select border-0 fs-6"
+              class="form-select hide-select-arrow border-0 border-0 fs-6"
               v-model="form.destination"
             >
               <option disabled value="">Chọn điểm đến</option>
@@ -63,9 +63,9 @@
               </button>
             </div>
           </div>
-          <button class="btn btn-light h-100 px-4" type="submit">
+          <router-link to="/roomsearch"><button class="btn btn-light h-100 px-4" type="submit">
             <i class="bi bi-search"></i> Tìm
-          </button>
+          </button></router-link>
         </div>
       </div>
     </form>
@@ -215,7 +215,12 @@ const searchRooms = () => {
   background: transparent;
   cursor: default;
 }
-
+.hide-select-arrow {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none !important;
+}
 @media (max-width: 767px) {
   .col-12:not(:last-child) {
     margin-bottom: 0.5rem;
