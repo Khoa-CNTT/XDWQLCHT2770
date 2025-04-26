@@ -63,82 +63,100 @@
               </button>
             </div>
           </div>
-          <router-link to="/roomsearch"><button class="btn btn-light h-100 px-4" type="submit">
+          <button class="btn btn-light h-100 px-4" type="submit">
             <i class="bi bi-search"></i> Tìm
-          </button></router-link>
+          </button>
         </div>
       </div>
     </form>
   </div>
 </template>
 
-<script setup>
+<script>
 import { ref, onMounted, onUnmounted } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
-const today = new Date()
+export default {
+  name: 'HotelSearch',
+  components: {
+    VueDatePicker
+  },
+  setup() {
+    const today = new Date()
 
-const form = ref({
-  destination: '',
-  dates: null,
-  guests: 1,
-})
+    const form = ref({
+      destination: '',
+      dates: null,
+      guests: 1,
+    })
 
-// Track screen size to toggle multi-calendars
-const isDesktop = ref(window.innerWidth >= 768)
+    // Track screen size to toggle multi-calendars
+    const isDesktop = ref(window.innerWidth >= 768)
 
-const updateScreenSize = () => {
-  isDesktop.value = window.innerWidth >= 768
-}
+    const updateScreenSize = () => {
+      isDesktop.value = window.innerWidth >= 768
+    }
 
-// Add event listener for window resize
-onMounted(() => {
-  window.addEventListener('resize', updateScreenSize)
-  const startDate = new Date()
-  const endDate = new Date(new Date().setDate(startDate.getDate() + 7))
-  form.value.dates = [startDate, endDate]
-})
+    // Add event listener for window resize and initialize dates
+    onMounted(() => {
+      window.addEventListener('resize', updateScreenSize)
+      const startDate = new Date()
+      const endDate = new Date(new Date().setDate(startDate.getDate() + 7))
+      form.value.dates = [startDate, endDate]
+    })
 
-// Clean up event listener on component unmount
-onUnmounted(() => {
-  window.removeEventListener('resize', updateScreenSize)
-})
+    // Clean up event listener on component unmount
+    onUnmounted(() => {
+      window.removeEventListener('resize', updateScreenSize)
+    })
 
-// Ràng buộc ngày không hợp lệ
-const disabledDates = (date) => {
-  const checkIn = form.value.dates?.[0]
-  if (checkIn && date <= checkIn) return true
-  return date < today
-}
+    // Ràng buộc ngày không hợp lệ
+    const disabledDates = (date) => {
+      const checkIn = form.value.dates?.[0]
+      if (checkIn && date <= checkIn) return true
+      return date < today
+    }
 
-// Tăng số người
-const incrementGuests = () => {
-  form.value.guests++
-}
+    // Tăng số người
+    const incrementGuests = () => {
+      form.value.guests++
+    }
 
-// Giảm số người
-const decrementGuests = () => {
-  if (form.value.guests > 1) {
-    form.value.guests--
+    // Giảm số người
+    const decrementGuests = () => {
+      if (form.value.guests > 1) {
+        form.value.guests--
+      }
+    }
+
+    const searchRooms = () => {
+      const [checkIn, checkOut] = form.value.dates || []
+      if (!checkIn || !checkOut) {
+        alert('Vui lòng chọn đầy đủ ngày nhận và trả phòng.')
+        return
+      }
+
+      console.log('Tìm kiếm với:', {
+        destination: form.value.destination,
+        checkIn,
+        checkOut,
+        guests: form.value.guests,
+      })
+
+      // TODO: Gửi API hoặc emit event ra component cha
+    }
+
+    return {
+      today,
+      form,
+      isDesktop,
+      disabledDates,
+      incrementGuests,
+      decrementGuests,
+      searchRooms
+    }
   }
-}
-
-const searchRooms = () => {
-  const [checkIn, checkOut] = form.value.dates || []
-  if (!checkIn || !checkOut) {
-    alert('Vui lòng chọn đầy đủ ngày nhận và trả phòng.')
-    return
-  }
-
-  console.log('Tìm kiếm với:', {
-    destination: form.value.destination,
-    checkIn,
-    checkOut,
-    guests: form.value.guests,
-  })
-
-  // TODO: Gửi API hoặc emit event ra component cha
 }
 </script>
 

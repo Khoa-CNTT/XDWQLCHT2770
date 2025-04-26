@@ -9,6 +9,11 @@ export default [
         component: () => import("../pages/PageUser/Home.vue"),
       },
       {
+        path: "kich-hoat-email/:hash",
+        name: "Active",
+        component: () => import("../pages/PageUser/Active.vue"),
+      },
+      {
         path: "",
         redirect: { name: "Home" },
       },
@@ -18,9 +23,9 @@ export default [
         component: () => import("../pages/PageUser/Post.vue"),
       },
       {
-        path: "roomdetail",
-        name: "RoomDetail",
-        component: () => import("../pages/pageUser/RoomDetails.vue"),
+        path: "homestaydetail",
+        name: "HomestayDetail",
+        component: () => import("../pages/pageUser/HomestayDetail.vue"),
       },
       {
         path: "login",
@@ -43,9 +48,29 @@ export default [
         component: () => import("../pages/pageUser/Profile.vue"), 
       },
       {
-        path: "roomsearch",
-        name: "RoomSearch",
-        component: () => import("../pages/pageUser/Roomsearch.vue"), 
+        path: "search",
+        name: "Search",
+        component: () => import("../pages/pageUser/SearchHomestay.vue"), 
+      },
+      {
+        path: "bookingdetail",
+        name: "BookingDetail",
+        component: () => import("../pages/pageUser/BookingDetails.vue"), 
+      },
+      {
+        path: "payment",
+        name: "Payment",
+        component: () => import("../pages/pageUser/ThanhToan.vue"), 
+      },
+      {
+        path: "quenmk",
+        name: "QuenMatKhau",
+        component: () => import("../pages/pageUser/QuenMK.vue"),
+      },
+      {
+        path: "about",
+        name: "About",
+        component: () => import("../pages/pageUser/About.vue"),
       },
     ],
   },

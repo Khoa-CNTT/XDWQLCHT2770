@@ -26,7 +26,7 @@ export default [
       {
         path: "rooms",
         name: "Rooms",
-        component: () => import("../pages/pageAdmin/Room.vue"),
+        component: () => import("../pages/pageAdmin/RoomManagement.vue"),
       },
       {
         path: "homestay",
@@ -39,10 +39,36 @@ export default [
         component: () => import("../pages/pageAdmin/Bookings.vue"),
       },
       {
-        path: "posts",
-        name: "Posts",
+        path: "baiviet",
+        name: "Baiviet",
         component: () => import("../pages/pageAdmin/Posts.vue"),
       },
+      {
+        path: "quanlyloaiphong",
+        name: "QuanLyLoaiPhong",
+        component: () => import("../pages/pageAdmin/QLLoaiPhong.vue"),
+      },
+      {
+        path: "qlnguoidung",
+        name: "QuanLyNguoiDung",
+        component: () => import("../pages/pageAdmin/QLTKnguoidung.vue"),
+      },
+      {
+        path: "qlnhanvien",
+        name: "QLNhanVien",
+        component: () => import("../pages/pageAdmin/QLTKnhanvien.vue"),
+      },
+      {
+        path: "qldanhgia",
+        name: "QLDanhGia",
+        component: () => import("../pages/pageAdmin/QLdanhgia.vue"),
+      },
+      {
+        path: "qldichvu",
+        name: "QLDichVu",
+        component: () => import("../pages/pageAdmin/QLdichvu.vue"),
+      },
+      
     ],
   },
 ];
