@@ -1,59 +1,81 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import api from '../services/api';
 
-// Thiết lập base URL cho Axios
-axios.defaults.baseURL = 'http://127.0.0.1:8000/'; // Thay bằng URL backend của bạn
-
-export const useAuthStore = defineStore('auth', {
+export const useUserStore = defineStore('user', {
   state: () => ({
-    user: null,
+    customer: null,
+    token: null,
     isAuthenticated: false,
   }),
-
   actions: {
-    // Hàm đăng nhập
     async login(credentials) {
       try {
-        // Lấy CSRF token (yêu cầu bởi Sanctum)
-        await axios.get('/sanctum/csrf-cookie');
+        const response = await api.post('/login', {
+          email: credentials.email,
+          mat_khau: credentials.password,
+        });
+        this.customer = response.data.customer;
+        this.token = response.data.token;
+        this.isAuthenticated = true;
 
-        // Gửi request đăng nhập (thay đổi endpoint nếu cần)
-        await axios.post('/api/login', credentials);
-
-        // Lấy thông tin người dùng từ API profile
-        await this.fetchUser();
-
-        return true;
+        localStorage.setItem('token', this.token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
       } catch (error) {
-        console.error('Đăng nhập thất bại:', error);
-        return false;
+        const message = error.response?.data?.message || 'Đăng nhập thất bại';
+        throw new Error(message);
       }
     },
-
-    // Hàm lấy thông tin người dùng
-    async fetchUser() {
+    async fetchProfile() {
       try {
-        const response = await axios.get('/api/profile');
-        this.user = response.data;
+        const response = await api.get('/profile');
+        this.customer = response.data.data;
         this.isAuthenticated = true;
       } catch (error) {
-        console.error('Lấy thông tin người dùng thất bại:', error);
-        this.user = null;
+        this.customer = null;
         this.isAuthenticated = false;
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
+        throw new Error(error.response?.data?.message || 'Lấy thông tin thất bại');
       }
     },
-
-    // Hàm đăng xuất
+    async checkToken() {
+      try {
+        const response = await api.get('/kiem-tra-token-khach-hang');
+        if (response.data.status) {
+          await this.fetchProfile();
+        }
+      } catch (error) {
+        this.customer = null;
+        this.isAuthenticated = false;
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
+        console.error('Lỗi khi kiểm tra token:', error);
+      }
+    },
     async logout() {
       try {
-        // Gọi API logout
-        await axios.post('/api/logout');
-        // Xóa thông tin người dùng
-        this.user = null;
-        this.isAuthenticated = false;
+        await api.post('/logout');
       } catch (error) {
-        console.error('Đăng xuất thất bại:', error);
+        console.error('Logout failed:', error);
+      }
+      this.customer = null;
+      this.token = null;
+      this.isAuthenticated = false;
+      localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
+    },
+    initializeAuth() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.token = token;
+        this.isAuthenticated = true;
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        this.checkToken();
       }
     },
+  },
+  getters: {
+    getCustomer: (state) => state.customer,
+    isLoggedIn: (state) => state.isAuthenticated,
   },
 });

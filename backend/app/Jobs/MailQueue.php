@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 
 use App\Mail\ActivateEmail;
+use App\Mail\ResetPassword;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,6 +29,11 @@ class MailQueue implements ShouldQueue
      */
     public function handle()
     {
-        Mail::to($this->data['email'])->send(new ActivateEmail($this->data));
+    //
+    $mailable = isset($this->data['hash_active'])
+            ? new ActivateEmail($this->data)
+            : new ResetPassword($this->data);
+
+        Mail::to($this->data['email'])->send($mailable);
     }
 }

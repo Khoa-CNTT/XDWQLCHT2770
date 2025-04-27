@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Facades;
 
 // routes/api.php
 
-
+Route::middleware('auth:sanctum')->post('/update-avatar', [KhachHangController::class, 'updateAvatar']);
 Route::post('register', [KhachHangController::class, 'register']);
+Route::middleware('auth:sanctum')->post('logout', [KhachHangController::class, 'logout']);
 Route::get('kiem-tra-token-khach-hang', [KhachHangController::class, 'kiemTraToken']);
 Route::post('/gui-mail-kich-hoat', [KhachHangController::class, 'kichHoatTK']);
 Route::post('/login', [KhachHangController::class, 'login']);
-Route::post('forgot-password', [KhachHangController::class, 'forgotPassword']);
+Route::post('/quen-mat-khau', [KhachHangController::class, 'quenMatKhau']);
+Route::post('/dat-lai-mat-khau', [KhachHangController::class, 'datLaiMatKhau']);
 Route::post('reset-password', [KhachHangController::class, 'resetPassword']);
 Route::get('/activate/{hash}', [KhachHangController::class, 'activateAccount']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -36,11 +38,4 @@ Route::post('/admin/dichvu/delete', [ServiceController::class, 'destroy']);
 
 Route::post("/khach-hang/kich-hoat", [KhachHangController::class, 'kichHoat']);
 Route::post("/khach-hang/dang-ky", [KhachHangController::class, 'dangKy']);
-
-
-Route::get('/admin/loaiphong/data', [LoaiPhongController::class, 'getLoaiPhong']);
-Route::post('/admin/loaiphong/store', [LoaiPhongController::class, 'addLoaiPhong']);
-Route::post('/admin/loaiphong/update', [LoaiPhongController::class, 'updateLoaiPhong']);
-Route::post('/admin/loaiphong/delete', [LoaiPhongController::class, 'deleteLoaiPhong']);
-
 

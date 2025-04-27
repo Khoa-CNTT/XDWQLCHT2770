@@ -1,4 +1,3 @@
-// src/main.js
 
 import { createApp } from 'vue';
 import router from './routers/index.js';
@@ -9,15 +8,9 @@ import axios from 'axios';
 
 
 
+
 const app = createApp(App);
 app.use(router);
-app.component("default-layout", Default)
-app.component("admin-layout",Admin)
-app.mount('#app');
-axios.interceptors.request.use(config => {
-    const token = localStorage.getItem('token'); // Nếu backend trả về token
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  });
+app.component("default-layout", Default);
+app.component("admin-layout", Admin);
+app.mount("#app");

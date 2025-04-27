@@ -9,20 +9,17 @@ class ResetPassword extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $customer;
-    public $hash;
+    protected $data;
 
-    public function __construct($customer, $hash)
+    public function __construct($data,)
     {
-        $this->customer = $customer;
-        $this->hash = $hash;
+        $this->data = $data;
+
     }
 
     public function build()
     {
-        $url = url('/api/reset-password?hash=' . $this->hash . '&email=' . $this->customer->email);
-        return $this->subject('Reset Your Password')
-                    ->view('emails.reset')
-                    ->with(['url' => $url]);
+        return $this->subject('Đặt lại mật khẩu')
+        ->view('emails.reset_password',['data' => $this->data]);
     }
 }

@@ -47,6 +47,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="flexSwitchCheckChecked"
+                          v-model="form.remember"
                         />
                         <label
                           class="form-check-label"
@@ -80,73 +81,52 @@
 </template>
 
 <script>
-import axios from "axios";
+import { useUserStore } from '../../stores/usesStore.js';
+import { useRouter } from 'vue-router';
 
 export default {
-  name: "Login",
+  setup() {
+    const userStore = useUserStore();
+    const router = useRouter();
+    return { userStore, router };
+  },
   data() {
     return {
       form: {
-        email: "",
-        mat_khau: "",
+        email: '',
+        mat_khau: '',
+        remember: false,
       },
-     
+      isLoading: false,
+      error: null,
     };
   },
   mounted() {
     this.checkLogin();
-    
   },
   methods: {
-    dangNhap() {
-      axios
-        .post("http://127.0.0.1:8000/api/login", this.form)
-        .then((res) => {
-          if (res.data.status) {
-            alert("Đăng nhập thành công");
-            localStorage.setItem("token_khachhang", res.data.token);
-            localStorage.setItem("ho_ten", res.data.customer.ho_ten);
-            localStorage.setItem("email", res.data.customer.email);
-            localStorage.setItem("avatar", res.data.customer.avatar || this.defaultAvatar);
-            localStorage.setItem("ngay_sinh", res.data.customer.ngay_sinh || null);
-            localStorage.setItem("so_dien_thoai", res.data.customer.so_dien_thoai || null);
-            window.location.reload();
-          } else {
-            this.error = res.data.message;
-          }
-        })
-        .catch((error) => {
-          this.error = "Đã xảy ra lỗi trong quá trình đăng nhập.";
-        });
+    async checkLogin() {
+      // Kiểm tra trạng thái đăng nhập
+      await this.userStore.initializeAuth();
+      if (this.userStore.isLoggedIn) {
+        this.router.push('/'); // Chuyển hướng nếu đã đăng nhập
+      }
     },
-    checkLogin() {
-    axios
-      .get("http://127.0.0.1:8000/api/kiem-tra-token-khach-hang", {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token_khachhang"),
-        },
-      })
-      .then((res) => {
-        if (res.data.status) {
-          this.$router.push('/');
-        }
-      });
-      
-  },
-  },
-  checkLogin() {
-    axios
-      .get("http://127.0.0.1:8000/api/kiem-tra-token-khach-hang", {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token_khachhang"),
-        },
-      })
-      .then((res) => {
-        if (res.data.status) {
-          this.$router.push('/');
-        }
-      });
-      
+    async dangNhap() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await this.userStore.login({
+          email: this.form.email,
+          password: this.form.mat_khau,
+        });
+        this.router.push('/'); // Chuyển hướng sau khi đăng nhập thành công
+      } catch (error) {
+        this.error = error.message;
+      } finally {
+        this.isLoading = false;
+      }
+    },
   },
 };
 </script>
