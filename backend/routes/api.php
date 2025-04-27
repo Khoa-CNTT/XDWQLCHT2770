@@ -2,7 +2,9 @@
 
 
 use App\Http\Controllers\KhachHangController;
+use App\Http\Controllers\LoaiPhongController;
 use App\Http\Controllers\ServiceController;
+use App\Models\LoaiPhong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Facades;
@@ -18,7 +20,6 @@ Route::post('/login', [KhachHangController::class, 'login']);
 Route::post('forgot-password', [KhachHangController::class, 'forgotPassword']);
 Route::post('reset-password', [KhachHangController::class, 'resetPassword']);
 Route::get('/activate/{hash}', [KhachHangController::class, 'activateAccount']);
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('profile', [KhachHangController::class, 'profile']);
     Route::post('logout', [KhachHangController::class, 'logout']);
@@ -32,5 +33,14 @@ Route::post('/admin/dichvu/store', [ServiceController::class, 'store']);
 Route::post('/admin/dichvu/update', [ServiceController::class, 'update']);
 Route::post('/admin/dichvu/delete', [ServiceController::class, 'destroy']);
 
+
 Route::post("/khach-hang/kich-hoat", [KhachHangController::class, 'kichHoat']);
 Route::post("/khach-hang/dang-ky", [KhachHangController::class, 'dangKy']);
+
+
+Route::get('/admin/loaiphong/data', [LoaiPhongController::class, 'getLoaiPhong']);
+Route::post('/admin/loaiphong/store', [LoaiPhongController::class, 'addLoaiPhong']);
+Route::post('/admin/loaiphong/update', [LoaiPhongController::class, 'updateLoaiPhong']);
+Route::post('/admin/loaiphong/delete', [LoaiPhongController::class, 'deleteLoaiPhong']);
+
+
