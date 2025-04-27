@@ -67,6 +67,12 @@ export default [
         name: "QuenMatKhau",
         component: () => import("../pages/pageUser/QuenMK.vue"),
       },
+
+      {
+        path:"dat-lai-mat-khau/:hash",
+        name:"resetpassword",
+        component:()=>import("../pages/PageUser/ResetPassword.vue")
+      },
       {
         path: "about",
         name: "About",

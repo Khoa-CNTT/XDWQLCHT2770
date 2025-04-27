@@ -71,16 +71,24 @@ export default {
     };
   },
   mounted() {
+    this.preloadImages(); // Preload hình ảnh để chuyển động mượt mà
     this.startAutoSlide();
   },
   beforeDestroy() {
     this.stopAutoSlide();
   },
   methods: {
+    preloadImages() {
+      // Preload tất cả hình ảnh để tránh lag khi chuyển slide
+      this.slides.forEach(slide => {
+        const img = new Image();
+        img.src = slide.image;
+      });
+    },
     startAutoSlide() {
       this.interval = setInterval(() => {
         this.nextSlide();
-      }, 3000);
+      }, 4000); // Tăng thời gian interval để người dùng có thời gian đọc nội dung
     },
     stopAutoSlide() {
       clearInterval(this.interval);
@@ -153,7 +161,6 @@ export default {
   text-align: center;
   z-index: 1;
   width: 80%;
-  
   padding: 20px;
   border-radius: 10px;
 }
@@ -203,6 +210,11 @@ export default {
   border-radius: 50%;
   z-index: 2;
   font-size: 1.2rem;
+  transition: background 0.3s ease;
+}
+
+.nav-button:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .nav-button.left {
@@ -213,36 +225,46 @@ export default {
   right: 15px;
 }
 
-/* Hiệu ứng chuyển động ngang mềm mại cho ảnh chính */
+/* Hiệu ứng chuyển động mượt mà hơn cho ảnh chính */
 .slide-enter-active,
 .slide-leave-active {
-  transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 1s ease, filter 1s ease;
 }
 
 .slide-enter {
   transform: translateX(100%);
   opacity: 0;
+  filter: blur(5px);
 }
 
 .slide-leave-to {
   transform: translateX(-100%);
   opacity: 0;
+  filter: blur(5px);
 }
 
-/* Hiệu ứng chuyển động ngang cho ảnh phụ */
+/* Hiệu ứng chuyển động mượt mà hơn cho ảnh phụ */
 .slide-side-enter-active,
 .slide-side-leave-active {
-  transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 1s ease, filter 1s ease;
 }
 
 .slide-side-enter {
   transform: translateX(50%);
   opacity: 0;
+  filter: blur(5px);
 }
 
 .slide-side-leave-to {
   transform: translateX(-50%);
   opacity: 0;
+  filter: blur(5px);
+}
+
+/* Preload hình ảnh để tránh giật lag */
+.main-image img,
+.side-image img {
+  will-change: transform, opacity, filter;
 }
 
 /* Responsive */
@@ -277,6 +299,12 @@ export default {
   .overlay-text button {
     padding: 10px 20px;
     font-size: 0.9rem;
+  }
+
+  /* Giảm thời gian transition cho thiết bị di động để mượt mà hơn */
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, filter 0.8s ease;
   }
 }
 

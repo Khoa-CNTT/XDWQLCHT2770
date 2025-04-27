@@ -17,7 +17,6 @@
 			<thead class="table-light">
 			  <tr class="align-middle">
 				<th>ID#</th>
-				<th>Ảnh</th>
 				<th>Tiêu đề</th>
 				<th>Nội dung</th>
 				<th>Ngày đăng</th>
@@ -33,9 +32,8 @@
 					  <h6 class="mb-0 font-14">{{ post.id }}</h6>
 					</div>
 				  </td>
-				  <td><img :src="post.image" class="" style="height:100px;width:100px; object-fit:cover" alt="" /></td>
 				  <td>{{ post.title }}</td>
-				  <td>{{ truncateContent(post.content, 50) }}</td>
+				  <td v-html="truncateContent(post.content, 50)"></td>
 				  <td>{{ formatDate(post.created_at) }}</td>
 				  <td>
 					<span v-if="post.status === 1" class="badge rounded-pill text-success bg-light-success p-2">
@@ -62,7 +60,7 @@
 	</div>
 	<!-- Modal Thêm bài viết -->
 	<div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
-	  <div class="modal-dialog modal-dialog-scrollable">
+	  <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
 		<div class="modal-content">
 		  <div class="modal-header">
 			<h5 class="modal-title">Thêm bài viết mới</h5>
@@ -72,27 +70,18 @@
 			<div>
 			  <label class="mt-2">Tiêu đề</label>
 			  <input type="text" class="form-control" v-model="newPost.title" placeholder="Nhập tiêu đề bài viết">
-			  <label class="mt-2">Nội dung</label>
-			  <textarea class="form-control" v-model="newPost.content" placeholder="Nhập nội dung bài viết"></textarea>
-			  <label class="mt-2">Tình trạng</label>
-			  <select class="form-select" v-model="newPost.status" aria-label="Default select example">
-				<option value="" disabled>Chọn tình trạng</option>
-				<option value="1">Công khai</option>
-				<option value="0">Nháp</option>
-			  </select>
-			  <div class="mb-4">
-				<label class="mt-2">Thêm ảnh</label>
-				<div class="form-control d-flex flex-wrap align-items-center gap-1" style="min-height: 50px;">
-				  <span v-if="mainImageSet" class="badge bg-primary d-flex align-items-center" style="padding-right: 0.5rem;">
-					{{ mainImageName }}
-					<button type="button" class="btn-close btn-close-white btn-sm ms-2" @click="removeMainImage" aria-label="Remove"></button>
-				  </span>
-				  <label style="cursor: pointer;" class="ms-auto mb-1">
-					<i class="fas fa-upload me-1"></i> Chọn ảnh
-					<input type="file" accept="image/*" @change="handleMainImage" class="d-none" />
-				  </label>
+				<div class="mb-3">
+				  <label class="mt-2">Nội dung</label>
+				  <div id="newPostEditor" class="editor-container"></div>
 				</div>
-			  </div>
+				<div class="mb-3">
+				  <label class="mt-2">Tình trạng</label>
+				  <select class="form-select" v-model="newPost.status" aria-label="Default select example">
+					<option value="" disabled>Chọn tình trạng</option>
+					<option value="1">Công khai</option>
+					<option value="0">Nháp</option>
+				  </select>
+				</div>
 			</div>
 		  </div>
 		  <div class="modal-footer">
@@ -104,7 +93,7 @@
 	</div>
 	<!-- Modal Sửa bài viết -->
 	<div class="modal fade" id="suaScrollableModal" tabindex="-1" aria-hidden="true">
-	  <div class="modal-dialog modal-dialog-scrollable">
+	  <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
 		<div class="modal-content">
 		  <div class="modal-header">
 			<h5 class="modal-title">Sửa thông tin bài viết</h5>
@@ -115,26 +104,13 @@
 			  <label class="mt-2">Tiêu đề</label>
 			  <input type="text" class="form-control" v-model="selectedPost.title" placeholder="Nhập tiêu đề bài viết">
 			  <label class="mt-2">Nội dung</label>
-			  <textarea class="form-control" v-model="selectedPost.content" placeholder="Nhập nội dung bài viết"></textarea>
+			  <div id="editPostEditor" class="editor-container"></div>
 			  <label class="mt-2">Tình trạng</label>
 			  <select class="form-select" v-model="selectedPost.status" aria-label="Default select example">
 				<option value="" disabled>Chọn tình trạng</option>
 				<option value="1">Công khai</option>
 				<option value="0">Nháp</option>
 			  </select>
-			  <div class="mb-4">
-				<label class="mt-2">Thêm ảnh</label>
-				<div class="form-control d-flex flex-wrap align-items-center gap-1" style="min-height: 50px;">
-				  <span v-if="mainImageSet" class="badge bg-primary d-flex align-items-center" style="padding-right: 0.5rem;">
-					{{ mainImageName }}
-					<button type="button" class="btn-close btn-close-white btn-sm ms-2" @click="removeMainImage" aria-label="Remove"></button>
-				  </span>
-				  <label style="cursor: pointer;" class="ms-auto mb-1">
-					<i class="fas fa-upload me-1"></i> Chọn ảnh
-					<input type="file" accept="image/*" @change="handleMainImage" class="d-none" />
-				  </label>
-				</div>
-			  </div>
 			</div>
 		  </div>
 		  <div class="modal-footer">
@@ -147,46 +123,45 @@
 </template>
 
 <script>
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
+import axios from 'axios';
+
 export default {
 	name: 'PostManagement',
 	data() {
 		return {
 			searchQuery: '',
-			mainImage: null,
-			mainImageName: '',
-			mainImageSet: false,
+			newPostEditor: null,
+			editPostEditor: null,
 			listPosts: [
 				{
 					id: 1,
 					title: 'Khám phá Đà Lạt mùa hoa mai anh đào',
-					content: 'Đà Lạt mùa hoa mai anh đào luôn là điểm đến hấp dẫn với du khách. Những con đường ngập sắc hồng...',
+					content: '<p>Đà Lạt mùa hoa mai anh đào luôn là điểm đến hấp dẫn với du khách. Những con đường ngập sắc hồng...</p>',
 					created_at: '2025-04-01',
 					status: 1,
-					image: 'https://i.pinimg.com/474x/ac/bb/de/acbbde00d2c652f55f5b993a41a0387d.jpg',
 				},
 				{
 					id: 2,
 					title: 'Top 5 homestay đẹp tại Sơn Trà',
-					content: 'Sơn Trà nổi tiếng với những homestay view biển tuyệt đẹp. Dưới đây là danh sách 5 homestay đáng trải nghiệm...',
+					content: '<p>Sơn Trà nổi tiếng với những homestay view biển tuyệt đẹp. Dưới đây là danh sách 5 homestay đáng trải nghiệm...</p>',
 					created_at: '2025-03-25',
 					status: 1,
-					image: 'https://i.pinimg.com/474x/29/99/e5/2999e5d1fc2a2227c56497c69d869d01.jpg',
 				},
 				{
 					id: 3,
 					title: 'Hành trình khám phá ẩm thực Đà Nẵng',
-					content: 'Ẩm thực Đà Nẵng là sự kết hợp hài hòa giữa hương vị miền Trung và sự sáng tạo...',
+					content: '<p>Ẩm thực Đà Nẵng là sự kết hợp hài hòa giữa hương vị miền Trung và sự sáng tạo...</p>',
 					created_at: '2025-03-15',
 					status: 0,
-					image: 'https://i.pinimg.com/474x/8b/99/90/8b999091298d0e2d376d2e5fdd2a3e53.jpg',
 				},
 				{
 					id: 4,
 					title: 'Cẩm nang du lịch Hội An',
-					content: 'Hội An - thành phố cổ kính với những con phố lồng đèn rực rỡ, là điểm đến không thể bỏ qua...',
+					content: '<p>Hội An - thành phố cổ kính với những con phố lồng đèn rực rỡ, là điểm đến không thể bỏ qua...</p>',
 					created_at: '2025-02-20',
 					status: 1,
-					image: 'https://i.pinimg.com/474x/e8/50/a2/e850a2270c2ae0969c89d50703b90a77.jpg',
 				},
 			],
 			selectedPost: {
@@ -194,16 +169,14 @@ export default {
 				title: '',
 				content: '',
 				created_at: '',
-				status: '',
-				image: ''
+				status: ''
 			},
 			newPost: {
 				id: null,
 				title: '',
 				content: '',
 				created_at: '',
-				status: '',
-				image: ''
+				status: ''
 			}
 		};
 	},
@@ -213,102 +186,172 @@ export default {
 				return this.listPosts;
 			}
 			const query = this.searchQuery.toLowerCase();
-			return this.listPosts.filter(post =>
-				post.title.toLowerCase().includes(query) ||
-				post.content.toLowerCase().includes(query)
-			);
+			return this.listPosts.filter(post => {
+				const textContent = this.stripHtml(post.content).toLowerCase();
+				return post.title.toLowerCase().includes(query) || textContent.includes(query);
+			});
 		}
 	},
 	methods: {
-		handleMainImage(event) {
-			const file = event.target.files[0];
-			if (file) {
-				this.mainImage = file;
-				this.mainImageName = file.name;
-				this.mainImageSet = true;
-				const imageUrl = URL.createObjectURL(file);
-				if (this.selectedPost.id) {
-					this.selectedPost.image = imageUrl;
-				} else {
-					this.newPost.image = imageUrl;
+		initializeQuillEditors() {
+			this.newPostEditor = new Quill('#newPostEditor', {
+				theme: 'snow',
+				modules: {
+					toolbar: [
+						[{ 'header': [1, 2, 3, false] }],
+						['bold', 'italic', 'underline'],
+						[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+						['link', 'image'],
+						['clean']
+					]
 				}
+			});
+			this.editPostEditor = new Quill('#editPostEditor', {
+				theme: 'snow',
+				modules: {
+					toolbar: [
+						[{ 'header': [1, 2, 3, false] }],
+						['bold', 'italic', 'underline'],
+						[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+						['link', 'image'],
+						['clean']
+					]
+				}
+			});
+			this.newPostEditor.on('text-change', () => {
+				this.newPost.content = this.newPostEditor.root.innerHTML;
+			});
+			this.editPostEditor.on('text-change', () => {
+				this.selectedPost.content = this.editPostEditor.root.innerHTML;
+			});
+			this.addImageHandler(this.newPostEditor);
+			this.addImageHandler(this.editPostEditor);
+		},
+		addImageHandler(quill) {
+			const toolbar = quill.getModule('toolbar');
+			toolbar.addHandler('image', () => {
+				const input = document.createElement('input');
+				input.setAttribute('type', 'file');
+				input.setAttribute('accept', 'image/*');
+				input.click();
+				input.onchange = async () => {
+					const file = input.files[0];
+					if (file) {
+						try {
+							const imageUrl = await this.uploadImage(file);
+							const range = quill.getSelection();
+							quill.insertEmbed(range.index, 'image', imageUrl);
+						} catch (error) {
+							alert('Lỗi khi tải ảnh lên!');
+							console.error(error);
+						}
+					}
+				};
+			});
+		},
+		async uploadImage(file) {
+			const formData = new FormData();
+			formData.append('image', file);
+			try {
+				const response = await axios.post('http://localhost:3000/api/upload-image', formData, {
+					headers: { 'Content-Type': 'multipart/form-data' }
+				});
+				return response.data.url;
+			} catch (error) {
+				throw new Error('Không thể tải ảnh lên');
 			}
 		},
-		removeMainImage() {
-			this.mainImage = null;
-			this.mainImageName = '';
-			this.mainImageSet = false;
-			if (this.selectedPost.id) {
-				this.selectedPost.image = '';
-			} else {
-				this.newPost.image = '';
-			}
-		},
-		addPost() {
+		async addPost() {
 			if (!this.newPost.title || !this.newPost.content) {
 				alert('Vui lòng nhập đầy đủ thông tin!');
 				return;
 			}
-			const newId = this.listPosts.length ? Math.max(...this.listPosts.map(p => p.id)) + 1 : 1;
-			this.listPosts.push({
-				...this.newPost,
-				id: newId,
-				created_at: new Date().toISOString().split('T')[0],
-				status: parseInt(this.newPost.status) || 0
-			});
-			this.newPost = {
-				id: null,
-				title: '',
-				content: '',
-				created_at: '',
-				status: '',
-				image: ''
-			};
-			this.mainImage = null;
-			this.mainImageName = '';
-			this.mainImageSet = false;
-			$('#exampleScrollableModal').modal('hide');
+			try {
+				const response = await axios.post('http://localhost:3000/api/posts', this.newPost);
+				this.listPosts.push({
+					...this.newPost,
+					id: response.data.id,
+					created_at: new Date().toISOString().split('T')[0]
+				});
+				this.newPost = {
+					id: null,
+					title: '',
+					content: '',
+					created_at: '',
+					status: ''
+				};
+				this.newPostEditor.setContents([]);
+				$('#exampleScrollableModal').modal('hide');
+			} catch (error) {
+				alert('Lỗi khi thêm bài viết!');
+				console.error(error);
+			}
 		},
 		editPost(post) {
 			this.selectedPost = { ...post };
-			this.mainImageSet = !!post.image;
-			this.mainImageName = post.image ? 'Hình ảnh hiện tại' : '';
+			this.$nextTick(() => {
+				this.editPostEditor.setContents([]);
+				this.editPostEditor.clipboard.dangerouslyPasteHTML(post.content);
+			});
 		},
-		savePost() {
-			const index = this.listPosts.findIndex(p => p.id === this.selectedPost.id);
-			if (index !== -1) {
-				this.listPosts.splice(index, 1, {
-					...this.selectedPost,
-					status: parseInt(this.selectedPost.status)
-				});
+		async savePost() {
+			try {
+				await axios.put(`http://localhost:3000/api/posts/${this.selectedPost.id}`, this.selectedPost);
+				const index = this.listPosts.findIndex(p => p.id === this.selectedPost.id);
+				if (index !== -1) {
+					this.listPosts.splice(index, 1, { ...this.selectedPost });
+				}
+				this.selectedPost = {
+					id: null,
+					title: '',
+					content: '',
+					created_at: '',
+					status: ''
+				};
+				this.editPostEditor.setContents([]);
+				$('#suaScrollableModal').modal('hide');
+			} catch (error) {
+				alert('Lỗi khi cập nhật bài viết!');
+				console.error(error);
 			}
-			this.selectedPost = {
-				id: null,
-				title: '',
-				content: '',
-				created_at: '',
-				status: '',
-				image: ''
-			};
-			this.mainImage = null;
-			this.mainImageName = '';
-			this.mainImageSet = false;
-			$('#suaScrollableModal').modal('hide');
 		},
-		deletePost(id) {
-			const confirmDelete = confirm('Bạn có chắc chắn muốn xóa bài viết này?');
-			if (confirmDelete) {
-				this.listPosts = this.listPosts.filter(post => post.id !== id);
+		async deletePost(id) {
+			if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+				try {
+					await axios.delete(`http://localhost:3000/api/posts/${id}`);
+					this.listPosts = this.listPosts.filter(post => post.id !== id);
+				} catch (error) {
+					alert('Lỗi khi xóa bài viết!');
+					console.error(error);
+				}
 			}
 		},
 		truncateContent(content, maxLength) {
-			if (content.length <= maxLength) return content;
-			return content.substring(0, maxLength) + '...';
+			const textContent = this.stripHtml(content);
+			if (textContent.length <= maxLength) return content;
+			return textContent.substring(0, maxLength) + '...';
+		},
+		stripHtml(html) {
+			const div = document.createElement('div');
+			div.innerHTML = html;
+			return div.textContent || div.innerText || '';
 		},
 		formatDate(date) {
 			const d = new Date(date);
 			return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+		},
+		async fetchPosts() {
+			try {
+				const response = await axios.get('http://localhost:3000/api/posts');
+				this.listPosts = response.data;
+			} catch (error) {
+				console.error('Lỗi khi tải danh sách bài viết:', error);
+			}
 		}
+	},
+	mounted() {
+		this.initializeQuillEditors();
+		this.fetchPosts();
 	}
 };
 </script>
@@ -335,8 +378,22 @@ export default {
 	color: #6c757d;
 	font-size: 18px;
 }
-textarea.form-control {
-	min-height: 100px;
-	resize: vertical;
+.editor-container {
+	min-height: 300px;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+}
+.editor-container .ql-editor {
+	min-height: 250px;
+}
+.modal-fullscreen .modal-content {
+	height: 100vh;
+}
+.modal-fullscreen .modal-body {
+	padding: 2rem;
+}
+.modal-fullscreen .form-control,
+.modal-fullscreen .form-select {
+	max-width: 100%;
 }
 </style>
