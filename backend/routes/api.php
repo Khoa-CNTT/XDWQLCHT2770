@@ -2,7 +2,9 @@
 
 
 use App\Http\Controllers\KhachHangController;
+use App\Http\Controllers\LoaiPhongController;
 use App\Http\Controllers\ServiceController;
+use App\Models\LoaiPhong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Facades;
@@ -20,7 +22,6 @@ Route::post('/quen-mat-khau', [KhachHangController::class, 'quenMatKhau']);
 Route::post('/dat-lai-mat-khau', [KhachHangController::class, 'datLaiMatKhau']);
 Route::post('reset-password', [KhachHangController::class, 'resetPassword']);
 Route::get('/activate/{hash}', [KhachHangController::class, 'activateAccount']);
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('profile', [KhachHangController::class, 'profile']);
     Route::post('logout', [KhachHangController::class, 'logout']);
@@ -33,6 +34,7 @@ Route::get('/admin/dichvu/data', [ServiceController::class, 'getDichVu']);
 Route::post('/admin/dichvu/store', [ServiceController::class, 'store']);
 Route::post('/admin/dichvu/update', [ServiceController::class, 'update']);
 Route::post('/admin/dichvu/delete', [ServiceController::class, 'destroy']);
+
 
 Route::post("/khach-hang/kich-hoat", [KhachHangController::class, 'kichHoat']);
 Route::post("/khach-hang/dang-ky", [KhachHangController::class, 'dangKy']);
