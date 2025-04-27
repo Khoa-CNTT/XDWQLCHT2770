@@ -9,7 +9,7 @@
         </div>
         <div class="carousel-item">
           <img style="width:100%; height:650px; object-fit: cover;"
-            src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(15).jpg" class="d-block w-100" alt="...">
+            src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(15).jpg" class="d-block w-100" alt="homestay danang">
         </div>
         <div class="carousel-item">
           <img style="width:100%; height:650px; object-fit: cover;"
