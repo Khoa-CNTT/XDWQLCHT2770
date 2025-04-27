@@ -1,59 +1,31 @@
 <template>
   <div class="container py-4">
-    <div class="row g-3">
-      <!-- Cột trái lớn -->
-      <div class="col-lg-6">
-        <div class="position-relative overflow-hidden rounded" style="height: 340px;">
-          <img src="https://mia.vn/media/uploads/blog-du-lich/homestay-da-nang-22-1701757275.jpg"
-            class="w-100 h-100 object-fit-cover" alt="Homestay Đà Nẵng">
-          <div class="position-absolute bottom-0 start-0 bg-dark bg-opacity-50 text-white p-3 w-100">
-            <h5 class="m-0 fw-bold">Top Homestay Đà Nẵng được yêu thích nhất</h5>
-            <p class="mb-0">Khám phá những homestay đẹp, giá tốt và đáng trải nghiệm nhất ở thành phố biển
-              Đà Nẵng năm 2025.</p>
-          </div>
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img style="width:100%; height: 650px; object-fit: cover;"
+            src="https://mia.vn/media/uploads/blog-du-lich/homestay-da-nang-22-1701757275.jpg" class="d-block w-100"
+            alt="...">
+        </div>
+        <div class="carousel-item">
+          <img style="width:100%; height:650px; object-fit: cover;"
+            src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(15).jpg" class="d-block w-100" alt="homestay danang">
+        </div>
+        <div class="carousel-item">
+          <img style="width:100%; height:650px; object-fit: cover;"
+            src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(5).jpg" class="d-block w-100" alt="...">
         </div>
       </div>
-      <!-- Cột phải gồm 4 ảnh nhỏ -->
-      <div class="col-lg-6">
-        <div class="row g-3">
-          <div class="col-6">
-            <div class="position-relative overflow-hidden rounded" style="height: 160px;">
-              <img src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(14).jpg"
-                class="w-100 h-100 object-fit-cover" alt="Homestay lãng mạn Đà Nẵng">
-              <div class="position-absolute bottom-0 start-0 bg-dark bg-opacity-50 text-white p-2 w-100">
-                <small>Homestay lãng mạn cho cặp đôi tại trung tâm Đà Nẵng</small>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="position-relative overflow-hidden rounded" style="height: 160px;">
-              <img src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(5).jpg" class="w-100 h-100 object-fit-cover" alt="Mẹo đặt phòng">
-              <div class="position-absolute bottom-0 start-0 bg-dark bg-opacity-50 text-white p-2 w-100">
-                <small>5 mẹo đặt homestay Đà Nẵng giá tốt mùa cao điểm</small>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="position-relative overflow-hidden rounded" style="height: 160px;">
-              <img src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(5).jpg"
-                class="w-100 h-100 object-fit-cover" alt="Gợi ý chỗ ở">
-              <div class="position-absolute bottom-0 start-0 bg-dark bg-opacity-50 text-white p-2 w-100">
-                <small>Top homestay gần biển Mỹ Khê – tiện nghi, view đẹp</small>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="position-relative overflow-hidden rounded" style="height: 160px;">
-              <img src="https://dsdhome.vn/uploads/products/homestay-da-nang%20(15).jpg"
-                class="w-100 h-100 object-fit-cover" alt="Workation Homestay">
-              <div class="position-absolute bottom-0 start-0 bg-dark bg-opacity-50 text-white p-2 w-100">
-                <small>Homestay lý tưởng cho làm việc từ xa tại Đà Nẵng</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
+
     <div class="row mt-5 ">
       <!-- Danh sách bài viết chính -->
       <div class="col-lg-8">
@@ -177,6 +149,16 @@
 </template>
 <script>
 export default {
+  mounted() {
+  const carouselElement = document.getElementById('carouselExampleFade')
+  if (carouselElement) {
+    new bootstrap.Carousel(carouselElement, {
+      interval: 4000,
+      ride: 'carousel',
+      pause: false
+    })
+  }
+}
 
 }
 </script>
