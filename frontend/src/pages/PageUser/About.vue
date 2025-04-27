@@ -4,7 +4,6 @@
         <img src="/public/logolight.png" style="height: 400px;" alt="...">
         <div class="card-img-overlay">
             <h1 class="card-title text-light text-uppercase  text-center">Về Chúng Tôi</h1>
-
         </div>
     </div>
     <div class="d-flex justify-content-center align-items-center mt-3">
