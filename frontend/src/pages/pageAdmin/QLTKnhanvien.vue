@@ -35,26 +35,26 @@
 					  <h6 class="mb-0 font-14">{{ employee.id }}</h6>
 					</div>
 				  </td>
-				  <td><img :src="employee.avatar" class="" style="height:100px;width:100px; object-fit:cover" alt="" /></td>
-				  <td>{{ employee.name }}</td>
+				  <td><img :src="`http://127.0.0.1:8000/storage/`+employee.avatar" class="" style="height:100px;width:100px; object-fit:cover" alt="" /></td>
+				  <td>{{ employee.ho_ten }}</td>
 				  <td>{{ employee.email }}</td>
-				  <td>{{ employee.phone }}</td>
-				  <td>{{ employee.position }}</td>
-				  <td>{{ employee.homestay }}</td>
+				  <td>{{ employee.so_dien_thoai }}</td>
+				  <td>{{ employee.ten_chuc_vu }}</td>
+				  <td class="description">{{ employee.ten_homestay }}</td>
 				  <td>
-					<span v-if="employee.status === 1" class="badge rounded-pill text-success bg-light-success p-2">
+					<span v-if="employee.is_block == 0" class="badge rounded-pill text-success bg-light-success p-2">
 					  <i class="bx bxs-circle me-1"></i>
 					  Hoạt động
 					</span>
 					<span v-else class="badge rounded-pill text-danger bg-light-danger p-2">
 					  <i class="bx bxs-circle me-1"></i>
-					  Nghỉ việc
+					  Khóa
 					</span>
 				  </td>
 				  <td>
 					<div class="d-flex order-actions">
-					  <a @click="editEmployee(employee)" data-bs-toggle="modal" data-bs-target="#suaScrollableModal" class=""><i class="bx bxs-edit"></i></a>
-					  <a href="javascript:;" class="ms-3" @click="deleteEmployee(employee.id)"><i class="bx bxs-trash"></i></a>
+					  <a @click="Object.assign(selectedEmployee,employee)" data-bs-toggle="modal" data-bs-target="#suaScrollableModal" class=""><i class="bx bxs-edit"></i></a>
+					  <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#deleteModal" class="ms-3" @click="Object.assign(xoaNV,	employee)"><i class="bx bxs-trash"></i></a>
 					</div>
 				  </td>
 				</tr>
@@ -75,43 +75,49 @@
 		  <div class="modal-body">
 			<div>
 			  <label class="mt-2">Tên nhân viên</label>
-			  <input type="text" class="form-control" v-model="newEmployee.name" placeholder="Nhập tên nhân viên">
+			  <input type="text" class="form-control" v-model="newEmployee.ho_ten" placeholder="Nhập tên nhân viên">
+			  <label class="mt-2">Ngày sinh</label>
+				<input type="date" class="form-control" v-model="newEmployee.ngay_sinh">
+				<label class="mt-2">Giới tính</label>
+				<select class="form-select" v-model="newEmployee.gioi_tinh">
+				  <option value="" disabled>Chọn giới tính</option>
+				  <option value="0">Nam</option>
+				  <option value="1">Nữ</option>
+				  <option value="2">Khác</option>
+
+				</select>
 			  <label class="mt-2">Email</label>
 			  <input type="email" class="form-control" v-model="newEmployee.email" placeholder="Nhập email" autocomplete="off">
 			  <label class="mt-2">Số điện thoại</label>
-			  <input type="text" class="form-control" v-model="newEmployee.phone" placeholder="Nhập số điện thoại">
+			  <input type="text" class="form-control" v-model="newEmployee.so_dien_thoai" placeholder="Nhập số điện thoại">
 			  <label class="mt-2">Mật khẩu</label>
 			  <input type="password" class="form-control" v-model="newEmployee.password" placeholder="Nhập mật khẩu" autocomplete="off">
 			  <label class="mt-2">Chức vụ</label>
-			  <select class="form-select" v-model="newEmployee.position" aria-label="Default select example">
+			  <select class="form-select" v-model="newEmployee.id_chuc_vu" aria-label="Default select example">
 				<option value="" disabled>Chọn chức vụ</option>
-				<option value="Nhân viên lễ tân">Nhân viên lễ tân</option>
-				<option value="Nhân viên tạp vụ">Nhân viên tạp vụ</option>
+				<option v-for="chucvu in listChucVu" :key="chucvu.id" :value="chucvu.id">{{ chucvu.ten_chuc_vu }}</option>
 			  </select>
 			  <label class="mt-2">Homestay đang làm việc</label>
-			  <select class="form-select" v-model="newEmployee.homestay" aria-label="Default select example">
+			  <select class="form-select" v-model="newEmployee.id_homestay" aria-label="Default select example">
 				<option value="" disabled>Chọn homestay</option>
-				<option value="Bơ Yang homestay">Bơ Yang homestay</option>
-				<option value="Healing homestay">Healing homestay</option>
-				<option value="Rose homestay">Rose homestay</option>
-				<option value="TiBi homestay">TiBi homestay</option>
+				<option v-for="homestay in listHomestays" :key="homestay.id" :value="homestay.id">{{ homestay.ten_homestay }}</option>
 			  </select>
 			  <label class="mt-2">Tình trạng</label>
-			  <select class="form-select" v-model="newEmployee.status" aria-label="Default select example">
+			  <select class="form-select" v-model="newEmployee.is_block" aria-label="Default select example">
 				<option value="" disabled>Chọn tình trạng</option>
-				<option value="1">Hoạt động</option>
-				<option value="0">Nghỉ việc</option>
+				<option value="0">Hoạt động</option>
+				<option value="1">Nghỉ việc</option>
 			  </select>
 			  <div class="mb-4">
 				<label class="mt-2">Ảnh đại diện</label>
 				<div class="form-control d-flex flex-wrap align-items-center gap-1" style="min-height: 50px;">
-				  <span v-if="mainImageSet" class="badge bg-primary d-flex align-items-center" style="padding-right: 0.5rem;">
+				  <span v-if="newEmployee.avatar" class="badge bg-primary d-flex align-items-center" style="padding-right: 0.5rem;">
 					{{ mainImageName }}
-					<button type="button" class="btn-close btn-close-white btn-sm ms-2" @click="removeMainImage" aria-label="Remove"></button>
+					<button type="button" class="btn-close btn-close-white btn-sm ms-2" @click="removeNewEmployeeImage" aria-label="Remove"></button>
 				  </span>
 				  <label style="cursor: pointer;" class="ms-auto mb-1">
 					<i class="fas fa-upload me-1"></i> Chọn ảnh
-					<input type="file" accept="image/*" @change="handleMainImage" class="d-none" />
+					<input type="file" accept="image/*" @change="handleNewEmployeeImage" class="d-none" />
 				  </label>
 				</div>
 			  </div>
@@ -135,32 +141,28 @@
 		  <div class="modal-body">
 			<div>
 			  <label class="mt-2">Tên nhân viên</label>
-			  <input type="text" class="form-control" v-model="selectedEmployee.name" placeholder="Nhập tên nhân viên">
+			  <input type="text" class="form-control" v-model="selectedEmployee.ho_ten" placeholder="Nhập tên nhân viên">
 			  <label class="mt-2">Email</label>
 			  <input type="email" class="form-control" v-model="selectedEmployee.email" placeholder="Nhập email" autocomplete="off">
 			  <label class="mt-2">Số điện thoại</label>
-			  <input type="text" class="form-control" v-model="selectedEmployee.phone" placeholder="Nhập số điện thoại">
+			  <input type="text" class="form-control" v-model="selectedEmployee.so_dien_thoai" placeholder="Nhập số điện thoại">
 			  <label class="mt-2">Mật khẩu (để trống nếu không thay đổi)</label>
 			  <input type="password" class="form-control" v-model="selectedEmployee.password" placeholder="Nhập mật khẩu mới" autocomplete="off">
 			  <label class="mt-2">Chức vụ</label>
-			  <select class="form-select" v-model="selectedEmployee.position" aria-label="Default select example">
+			  <select class="form-select" v-model="selectedEmployee.id_chuc_vu" aria-label="Default select example">
 				<option value="" disabled>Chọn chức vụ</option>
-				<option value="Nhân viên lễ tân">Nhân viên lễ tân</option>
-				<option value="Nhân viên tạp vụ">Nhân viên tạp vụ</option>
+				<option v-for="chucvu in listChucVu" :key="chucvu.id" :value="chucvu.id">{{ chucvu.ten_chuc_vu }}</option>
 			  </select>
 			  <label class="mt-2">Homestay đang làm việc</label>
-			  <select class="form-select" v-model="selectedEmployee.homestay" aria-label="Default select example">
+			  <select class="form-select" v-model="selectedEmployee.id_homestay" aria-label="Default select example">
 				<option value="" disabled>Chọn homestay</option>
-				<option value="Bơ Yang homestay">Bơ Yang homestay</option>
-				<option value="Healing homestay">Healing homestay</option>
-				<option value="Rose homestay">Rose homestay</option>
-				<option value="TiBi homestay">TiBi homestay</option>
+				<option v-for="homestay in listHomestays" :key="homestay.id" :value="homestay.id">{{ homestay.ten_homestay }}</option>
 			  </select>
 			  <label class="mt-2">Tình trạng</label>
-			  <select class="form-select" v-model="selectedEmployee.status" aria-label="Default select example">
+			  <select class="form-select" v-model="selectedEmployee.is_block" aria-label="Default select example">
 				<option value="" disabled>Chọn tình trạng</option>
-				<option value="1">Hoạt động</option>
-				<option value="0">Nghỉ việc</option>
+				<option value="0">Hoạt động</option>
+				<option value="1">Nghỉ việc</option>
 			  </select>
 			  <div class="mb-4">
 				<label class="mt-2">Ảnh đại diện</label>
@@ -179,85 +181,95 @@
 		  </div>
 		  <div class="modal-footer">
 			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Thoát</button>
-			<button type="button" class="btn btn-primary" @click="saveEmployee">Lưu</button>
+			<button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveEmployee">Lưu</button>
 		  </div>
 		</div>
 	  </div>
 	</div>
+	<!-- modal xóa nhâ viên -->
+	<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger">
+          <h5 class="modal-title text-white"><b>Xóa nhân viên</b></h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger" role="alert">
+            Bạn có chắc chắn muốn xóa nhân viên <strong>{{ xoaNV.ho_ten }}</strong
+            >?
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Đóng
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            v-on:click="deleteNV()"
+            data-bs-dismiss="modal"
+          >
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+import Toaster from '@meforma/vue-toaster/src/Toaster.vue';
+import baseRequest from '../../core/baseRequest';
+import { createToaster } from '@meforma/vue-toaster';
+const toaster = createToaster({
+	position: 'bottom-right',
+	duration: 3000,
+});
 export default {
 	name: 'EmployeeManagement',
 	data() {
 		return {
+			xoaNV: {},
 			searchQuery: '',
 			mainImage: null,
 			mainImageName: '',
 			mainImageSet: false,
-			listEmployees: [
-				{
-					id: 1,
-					name: 'Nguyễn Thị An',
-					email: 'an.nguyen@example.com',
-					phone: '0901234567',
-					position: 'Nhân viên lễ tân',
-					homestay: 'Bơ Yang homestay',
-					status: 1,
-					avatar: 'https://i.pinimg.com/474x/ac/bb/de/acbbde00d2c652f55f5b993a41a0387d.jpg'
-				},
-				{
-					id: 2,
-					name: 'Trần Văn Bình',
-					email: 'binh.tran@example.com',
-					phone: '0912345678',
-					position: 'Nhân viên lễ tân',
-					homestay: 'Healing homestay',
-					status: 1,
-					avatar: 'https://i.pinimg.com/474x/29/99/e5/2999e5d1fc2a2227c56497c69d869d01.jpg'
-				},
-				{
-					id: 3,
-					name: 'Lê Thị Cẩm',
-					email: 'cam.le@example.com',
-					phone: '0923456789',
-					position: 'Nhân viên tạp vụ',
-					homestay: 'Rose homestay',
-					status: 0,
-					avatar: 'https://i.pinimg.com/474x/8b/99/90/8b999091298d0e2d376d2e5fdd2a3e53.jpg'
-				},
-				{
-					id: 4,
-					name: 'Phạm Văn Đức',
-					email: 'duc.pham@example.com',
-					phone: '0934567890',
-					position: 'Nhân viên tạp vụ',
-					homestay: 'TiBi homestay',
-					status: 1,
-					avatar: 'https://i.pinimg.com/474x/e8/50/a2/e850a2270c2ae0969c89d50703b90a77.jpg'
-				}
-			],
+			listEmployees: [],
+			listHomestays: [],
+			listChucVu: [],
 			selectedEmployee: {
-				id: null,
-				name: '',
+				id: '',
+				ho_ten: '',
+				so_dien_thoai: '',
+				ngay_sinh: '',
+				gioi_tinh: null,
 				email: '',
-				phone: '',
-				password: '',
-				position: '',
-				homestay: '',
-				status: '',
-				avatar: ''
+				avatar: '',
+				is_block: null,
+				id_chuc_vu: null,
+				id_homestay: null,
 			},
 			newEmployee: {
-				id: null,
-				name: '',
+				ho_ten: '',
+				ngay_sinh: '',
+				gioi_tinh: null,
+				so_dien_thoai: '',
 				email: '',
-				phone: '',
 				password: '',
-				position: '',
-				homestay: '',
-				status: '',
-				avatar: ''
+				avatar: '',
+				is_block: null,
+				id_chuc_vu: null,
+				id_homestay: null,
 			}
 		};
 	},
@@ -268,12 +280,17 @@ export default {
 			}
 			const query = this.searchQuery.toLowerCase();
 			return this.listEmployees.filter(employee =>
-				employee.name.toLowerCase().includes(query) ||
+				employee.ho_ten.toLowerCase().includes(query) ||
 				employee.email.toLowerCase().includes(query) ||
-				employee.phone.toLowerCase().includes(query) ||
-				employee.homestay.toLowerCase().includes(query)
+				employee.so_dien_thoai.toLowerCase().includes(query) ||
+				employee.ten_homestay.toLowerCase().includes(query)
 			);
 		}
+	},
+	mounted() {
+		this.getData();
+		this.getHomestays();
+		this.getChucVu();
 	},
 	methods: {
 		handleMainImage(event) {
@@ -283,88 +300,131 @@ export default {
 				this.mainImageName = file.name;
 				this.mainImageSet = true;
 				const imageUrl = URL.createObjectURL(file);
-				if (this.selectedEmployee.id) {
-					this.selectedEmployee.avatar = imageUrl;
-				} else {
-					this.newEmployee.avatar = imageUrl;
-				}
+				this.selectedEmployee.avatar = imageUrl;
+			}
+		},
+		handleNewEmployeeImage(event) {
+			const file = event.target.files[0];
+			if (file) {
+				this.mainImage = file;
+				this.mainImageName = file.name;
+				this.mainImageSet = true;
+				const imageUrl = URL.createObjectURL(file);
+				this.newEmployee.avatar = imageUrl;
 			}
 		},
 		removeMainImage() {
 			this.mainImage = null;
 			this.mainImageName = '';
 			this.mainImageSet = false;
-			if (this.selectedEmployee.id) {
-				this.selectedEmployee.avatar = '';
-			} else {
-				this.newEmployee.avatar = '';
-			}
+			this.selectedEmployee.avatar = '';
+		},
+		removeNewEmployeeImage() {
+			this.mainImage = null;
+			this.mainImageName = '';
+			this.mainImageSet = false;
+			this.newEmployee.avatar = '';
+		},
+		getData() {
+			baseRequest
+				.get('/admin/nhan-vien/data')
+				.then((response) => {
+					this.listEmployees = response.data.nhan_vien;
+				})
+				.catch((error) => {
+					console.log('Lấy dữ liệu nhân viên thất bại', error);
+				});
+		},
+		getHomestays() {
+			baseRequest
+				.get('/admin/homestay/data')
+				.then((response) => {
+					this.listHomestays = response.data;
+				})
+				.catch((error) => {
+					console.log('Lấy dữ liệu homestay thất bại', error);
+				});
+		},
+		getChucVu() {
+			baseRequest
+				.get('/admin/chuc-vu/data')
+				.then((response) => {
+					this.listChucVu = response.data;
+				})
+				.catch((error) => {
+					console.log('Lấy dữ liệu chức vụ thất bại', error);
+				});
 		},
 		addEmployee() {
-			if (!this.newEmployee.name || !this.newEmployee.email || !this.newEmployee.password || !this.newEmployee.position || !this.newEmployee.homestay) {
-				alert('Vui lòng nhập đầy đủ thông tin!');
-				return;
+			// Logic thêm nhân viên (gửi API với FormData nếu cần)
+			const formData = new FormData();
+			formData.append('ho_ten', this.newEmployee.ho_ten);
+			formData.append('ngay_sinh', this.newEmployee.ngay_sinh);
+			formData.append('gioi_tinh', this.newEmployee.gioi_tinh);
+			formData.append('email', this.newEmployee.email);
+			formData.append('so_dien_thoai', this.newEmployee.so_dien_thoai);
+			formData.append('password', this.newEmployee.password);
+			formData.append('id_chuc_vu', this.newEmployee.id_chuc_vu);
+			formData.append('id_homestay', this.newEmployee.id_homestay);
+			formData.append('is_block', this.newEmployee.is_block);
+			if (this.mainImage) {
+				formData.append('avatar', this.mainImage);
 			}
-			const newId = this.listEmployees.length ? Math.max(...this.listEmployees.map(e => e.id)) + 1 : 1;
-			this.listEmployees.push({
-				...this.newEmployee,
-				id: newId,
-				status: parseInt(this.newEmployee.status) || 0
-			});
-			this.newEmployee = {
-				id: null,
-				name: '',
-				email: '',
-				phone: '',
-				password: '',
-				position: '',
-				homestay: '',
-				status: '',
-				avatar: ''
-			};
-			this.mainImage = null;
-			this.mainImageName = '';
-			this.mainImageSet = false;
-			$('#exampleScrollableModal').modal('hide');
-		},
-		editEmployee(employee) {
-			this.selectedEmployee = { ...employee, password: '' }; // Không load mật khẩu cũ
-			this.mainImageSet = !!employee.avatar;
-			this.mainImageName = employee.avatar ? 'Hình ảnh hiện tại' : '';
+
+			baseRequest
+				.post('/admin/nhan-vien/them', formData)
+				.then((response) => {
+					this.listEmployees.push(response.data.nhan_vien);
+					this.newEmployee = { ho_ten: '', email: '', so_dien_thoai: '', password: '', avatar: '', is_block: null, id_chuc_vu: null, id_homestay: null };
+					this.removeNewEmployeeImage();
+					this.getData();
+					toaster.success('Thêm nhân viên thành công');
+				})
+				.catch((error) => {
+					console.log('Thêm nhân viên thất bại', error);
+				});
 		},
 		saveEmployee() {
-			const index = this.listEmployees.findIndex(e => e.id === this.selectedEmployee.id);
-			if (index !== -1) {
-				const updatedEmployee = {
-					...this.selectedEmployee,
-					status: parseInt(this.selectedEmployee.status)
-				};
-				if (!this.selectedEmployee.password) {
-					delete updatedEmployee.password;
-				}
-				this.listEmployees.splice(index, 1, updatedEmployee);
+			// Logic sửa nhân viên (gửi API với FormData nếu cần)
+			const formData = new FormData();
+			formData.append('id', this.selectedEmployee.id);
+			formData.append('ho_ten', this.selectedEmployee.ho_ten);
+			formData.append('ngay_sinh', this.selectedEmployee.ngay_sinh);
+			formData.append('gioi_tinh', this.selectedEmployee.gioi_tinh);
+			formData.append('email', this.selectedEmployee.email);
+			formData.append('so_dien_thoai', this.selectedEmployee.so_dien_thoai);
+			if (this.selectedEmployee.password) {
+				formData.append('password', this.selectedEmployee.password);
 			}
-			this.selectedEmployee = {
-				id: null,
-				name: '',
-				email: '',
-				phone: '',
-				password: '',
-				position: '',
-				homestay: '',
-				status: '',
-				avatar: ''
-			};
-			this.mainImage = null;
-			this.mainImageName = '';
-			this.mainImageSet = false;
-			$('#suaScrollableModal').modal('hide');
+			formData.append('id_chuc_vu', this.selectedEmployee.id_chuc_vu);
+			formData.append('id_homestay', this.selectedEmployee.id_homestay);
+			formData.append('is_block', this.selectedEmployee.is_block);
+			if (this.mainImage) {
+				formData.append('avatar', this.mainImage);
+			}
+
+			baseRequest
+				.post('/admin/nhan-vien/sua', formData)
+				.then((response) => {
+					this.getData();
+					this.removeMainImage();
+					toaster.success('Cập nhật nhân viên thành công');
+				})
+				.catch((error) => {
+					console.log('Cập nhật nhân viên thất bại', error);
+				});
 		},
-		deleteEmployee(id) {
-			const confirmDelete = confirm('Bạn có chắc chắn muốn xóa nhân viên này?');
-			if (confirmDelete) {
-				this.listEmployees = this.listEmployees.filter(employee => employee.id !== id);
-			}
+		deleteNV() {
+			baseRequest
+				.post('/admin/nhan-vien/xoa', this.xoaNV)
+				.then((response) => {
+					this.getData();
+					toaster.success('Xóa nhân viên thành công');
+				})
+				.catch((error) => {
+					console.log('Xóa nhân viên thất bại', error);
+					toaster.error('Xóa nhân viên thất bại');
+				});
 		}
 	}
 };
@@ -395,5 +455,9 @@ export default {
 textarea.form-control {
 	min-height: 100px;
 	resize: vertical;
+}
+.description {
+	white-space: normal;
+	max-width: 200px;
 }
 </style>

@@ -13,8 +13,8 @@
 		  <div class="d-flex">
 			<select v-model="filterStatus" class="form-select form-select-sm radius-30 mt-2 mt-lg-0" style="width:fit-content;">
 			  <option value="">Trạng thái</option>
-			  <option value="1">Đã duyệt</option>
-			  <option value="0">Chưa duyệt</option>
+			  <option value="1">Hiện</option>
+			  <option value="0">Ẩn</option>
 			</select>
 		  </div>
 		</div>
@@ -58,7 +58,7 @@
 					'badge rounded-pill text-warning bg-light-warning p-2 text-uppercase px-3': review.status === 0
 				  }">
 					<i class="bx bxs-circle me-1"></i>
-					{{ review.status === 1 ? 'Đã duyệt' : 'Chưa duyệt' }}
+					{{ review.status === 1 ? 'Hiện' : 'Ẩn' }}
 				  </span>
 				</td>
 				<td>

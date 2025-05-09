@@ -1,12 +1,13 @@
 <template>
-  <div class="slider-container">
+  <div class="slider-container" v-if="homestays.length > 0">
     <!-- Ảnh bên trái (mờ) -->
     <div class="side-image left">
       <transition name="slide-side">
         <img
-          :key="slides[(currentIndex - 1 + slides.length) % slides.length].image"
-          :src="slides[(currentIndex - 1 + slides.length) % slides.length].image"
+          :key="homestays[(currentIndex - 1 + homestays.length) % homestays.length].id"
+          :src="homestays[(currentIndex - 1 + homestays.length) % homestays.length].image || defaultImage"
           alt="Slide left"
+          @error="handleImageError"
         />
       </transition>
     </div>
@@ -14,17 +15,18 @@
     <!-- Ảnh chính ở giữa -->
     <div class="main-image">
       <div class="overlay-text">
-        <h2>{{ slides[currentIndex].roomType }}</h2>
-        <p>{{ slides[currentIndex].description }}</p>
+        <h2>{{ homestays[currentIndex].ten_homestay || 'Homestay' }}</h2>
+        <p>{{ homestays[currentIndex].mo_ta || 'Không có mô tả' }}</p>
         <router-link to="/search">
           <button>Đặt phòng ngay</button>
         </router-link>
       </div>
       <transition name="slide">
         <img
-          :key="slides[currentIndex].image"
-          :src="slides[currentIndex].image"
+          :key="homestays[currentIndex].id"
+          :src="homestays[currentIndex].image || defaultImage"
           alt="Main slide"
+          @error="handleImageError"
         />
       </transition>
       <button class="nav-button left" @click="prevSlide">❮</button>
@@ -35,71 +37,72 @@
     <div class="side-image right">
       <transition name="slide-side">
         <img
-          :key="slides[(currentIndex + 1) % slides.length].image"
-          :src="slides[(currentIndex + 1) % slides.length].image"
+          :key="homestays[(currentIndex + 1) % homestays.length].id"
+          :src="homestays[(currentIndex + 1) % homestays.length].image || defaultImage"
           alt="Slide right"
+          @error="handleImageError"
         />
       </transition>
     </div>
   </div>
+  <div v-else class="text-center py-10">
+    <p class="text-gray-500">Đang tải danh sách homestay...</p>
+  </div>
 </template>
 
 <script>
+import api from '../../services/api';
+
 export default {
   name: 'Slider',
   data() {
     return {
-      slides: [
-        {
-          roomType: 'Phòng Deluxe View Biển',
-          description: 'Tận hưởng không gian sang trọng với tầm nhìn toàn cảnh biển Đà Nẵng.',
-          image: 'https://storage.googleapis.com/vinhomes-data-02/hinh-anh-top-20-y-tuong-thiet-ke-homestay-dep-an-tuong-hut-khach-so-1_1646321312.jpg'
-        },
-        {
-          roomType: 'Phòng Gỗ Thiên Nhiên',
-          description: 'Thư giãn trong không gian mộc mạc, hòa mình vào thiên nhiên.',
-          image: 'https://th.bing.com/th/id/OIP.KS2r3thDPGpvo9xjCbNLJAHaFP?rs=1&pid=ImgDetMain'
-        },
-        {
-          roomType: 'Phòng Lãng Mạn View Núi',
-          description: 'Lý tưởng cho cặp đôi với khung cảnh núi non hùng vĩ.',
-          image: 'https://charminghome.com.vn/wp-content/uploads/2018/01/Thi%E1%BA%BFt-K%E1%BA%BF-Homestay-5.jpg'
-        }
-      ],
+      homestays: [],
+      backendBaseUrl: "http://127.0.0.1:8000/storage/",
+      defaultImage: "https://via.placeholder.com/600x400?text=No+Image",
       currentIndex: 0,
-      interval: null
+      interval: null,
     };
   },
   mounted() {
-    this.preloadImages(); // Preload hình ảnh để chuyển động mượt mà
     this.startAutoSlide();
+    this.getHomestay();
   },
   beforeDestroy() {
     this.stopAutoSlide();
   },
   methods: {
-    preloadImages() {
-      // Preload tất cả hình ảnh để tránh lag khi chuyển slide
-      this.slides.forEach(slide => {
-        const img = new Image();
-        img.src = slide.image;
-      });
+    async getHomestay() {
+      try {
+        const response = await api.get('/homestay/list');
+        if (response && response.data) {
+          this.homestays = response.data.map((homestay) => ({
+            ...homestay,
+            image: homestay.anh_chinh ? this.backendBaseUrl + homestay.anh_chinh : this.defaultImage,
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching homestays:', error);
+      }
     },
     startAutoSlide() {
       this.interval = setInterval(() => {
         this.nextSlide();
-      }, 4000); // Tăng thời gian interval để người dùng có thời gian đọc nội dung
+      }, 4000);
     },
     stopAutoSlide() {
       clearInterval(this.interval);
     },
     nextSlide() {
-      this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+      this.currentIndex = (this.currentIndex + 1) % this.homestays.length;
     },
     prevSlide() {
-      this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
-    }
-  }
+      this.currentIndex = (this.currentIndex - 1 + this.homestays.length) % this.homestays.length;
+    },
+    handleImageError(event) {
+      event.target.src = this.defaultImage;
+    },
+  },
 };
 </script>
 
@@ -301,7 +304,6 @@ export default {
     font-size: 0.9rem;
   }
 
-  /* Giảm thời gian transition cho thiết bị di động để mượt mà hơn */
   .slide-enter-active,
   .slide-leave-active {
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, filter 0.8s ease;

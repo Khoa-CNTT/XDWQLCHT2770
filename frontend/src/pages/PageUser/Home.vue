@@ -202,7 +202,6 @@
 </template>
 
 <script>
-import SearchRoom from "../../components/User/SearchRoom.vue";
 import Baner from "../../components/User/Baner.vue";
 import ListHShome from "../../components/User/ListHShome.vue";
 import ListPost from "../../components/User/ListPost.vue";
@@ -210,7 +209,6 @@ import ListPost from "../../components/User/ListPost.vue";
 export default {
   name: "HomePage",
   components: {
-    SearchRoom,
     Baner,
     ListHShome,
     ListPost,

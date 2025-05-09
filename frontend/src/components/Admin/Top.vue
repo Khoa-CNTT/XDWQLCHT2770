@@ -1,7 +1,8 @@
 
 <template >
-  <div class="wrapper" :class="{ toggled: isToggled }">
-    <header>
+  <div class="wrapper" :class="{ toggled: isToggled }" >
+   
+     <header>
       <div class="topbar d-flex align-items-center" style="">
         <nav class="navbar navbar-expand d-flex justify-content-between">
           <div class="topbar-logo-header">
@@ -27,13 +28,15 @@
               aria-expanded="false"
             >
               <img
-                src="../../../public/image.png"
+                :src="avatarUrl"
                 class="user-img"
                 alt="user avatar"
               />
               <div class="user-info ps-3">
-                <p class="user-name mb-0">Admin</p>
-                <p class="designattion mb-0">Manager</p>
+                <p class="user-name mb-0">
+                  {{ admin?.ho_ten }}
+                </p>
+                <p class="designattion mb-0">{{ admin?.chuc_vu.ten_chuc_vu}}</p>
               </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -43,9 +46,9 @@
                 >
               </li>
               <li>
-                <a class="dropdown-item" href="javascript:;"
+               <router-link to="/admin/profile"> <a class="dropdown-item" href="javascript:;"
                   ><i class="bx bx-cog"></i><span>Settings</span></a
-                >
+                ></router-link>
               </li>
               <li>
                 <a class="dropdown-item" href="javascript:;"
@@ -66,17 +69,16 @@
                 <div class="dropdown-divider mb-0"></div>
               </li>
               <li>
-                <router-link to="/admin/login"
-                  ><a class="dropdown-item" href="javascript:;"
+                <a class="dropdown-item" href="javascript:;" @click="logout"
                     ><i class="bx bx-log-out-circle"></i><span>Logout</span></a
-                  ></router-link
-                >
+                  >
               </li>
             </ul>
           </div>
         </nav>
       </div>
-    </header>
+     </header>
+  
     <div class="nav-container primary-menu">
       <div class="mobile-topbar-header">
         <div>
@@ -126,16 +128,13 @@
                   ><i class="bx bx-right-arrow-alt"></i>QL Homestay</a
                 >
               </li>
-              <li>
-                <a class="dropdown-item" href="/admin/quanlyloaiphong"
-                  ><i class="bx bx-right-arrow-alt"></i>QL loại phòng</a
-                >
-              </li>
+
               <li>
                 <a class="dropdown-item" href="/admin/rooms"
                   ><i class="bx bx-right-arrow-alt"></i>QL phòng</a
                 >
               </li>
+             
             </ul>
           </li>
 
@@ -144,6 +143,14 @@
               <a class="nav-link">
                 <div class="parent-icon"><i class="bx bx-file"></i></div>
                 <div class="menu-title">Bài viết</div>
+              </a>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/admin/phanquyen">
+              <a class="nav-link">
+                <div class="parent-icon"><i class="bx bx-file"></i></div>
+                <div class="menu-title">Phân Quyền</div>
               </a>
             </router-link>
           </li>
@@ -170,16 +177,24 @@
             </ul>
           </li>
           <li class="nav-item">
-            <router-link to="/admin/qldanhgia"><a class="nav-link">
-              <div class="parent-icon"><i class="fa-solid fa-cart-plus"></i></div>
-              <div class="menu-title">Đánh giá</div>
-            </a></router-link>
+            <router-link to="/admin/qldanhgia"
+              ><a class="nav-link">
+                <div class="parent-icon">
+                  <i class="fa-solid fa-cart-plus"></i>
+                </div>
+                <div class="menu-title">Đánh giá</div>
+              </a></router-link
+            >
           </li>
           <li class="nav-item">
-            <router-link to="/admin/qldichvu"><a class="nav-link">
-              <div class="parent-icon"><i class="fa-solid fa-cart-plus"></i></div>
-              <div class="menu-title">Dịch vụ</div>
-            </a></router-link>
+            <router-link to="/admin/qldichvu"
+              ><a class="nav-link">
+                <div class="parent-icon">
+                  <i class="fa-solid fa-cart-plus"></i>
+                </div>
+                <div class="menu-title">Dịch vụ</div>
+              </a></router-link
+            >
           </li>
         </ul>
       </nav>
@@ -190,15 +205,52 @@
   </div>
 </template>
 <script>
+import { useAdminStore } from "../../stores/useAdminStore";
+import { useRouter } from "vue-router";
 export default {
+  setup() {
+    const adminStore = useAdminStore();
+    const router = useRouter();
+    return {
+      adminStore,
+      router,
+    };
+  },
   data() {
     return {
       isToggled: false,
+      defaulAvatar:"../../../public/image.png",
+      backendBaseUrl:"http://127.0.0.1:8000/storage/"
     };
+  },
+  computed: {
+    admin() {
+      return this.adminStore.getAdmin;
+    },
+    isLoggedIn() {
+      return this.adminStore.isLoggedIn;
+    },
+    avatarUrl() {
+      return this.admin?.avatar
+        ? `${this.backendBaseUrl}${this.admin.avatar}`
+        : this.defaulAvatar;
+    },
+  },
+  mounted() {
+    
+    console.log(this.adminStore.getAdmin);
   },
   methods: {
     toggleDiv() {
       this.isToggled = !this.isToggled;
+    },
+    async logout() {
+      try {
+        await this.adminStore.logout();
+        this.$router.push("/admin/login");
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
     },
   },
 };

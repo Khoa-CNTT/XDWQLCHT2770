@@ -11,6 +11,7 @@ use App\Http\Requests\DatLaiMatKhauRequest;
 use App\Http\Requests\QuenMKRequest;
 use App\Mail\ActivateEmail;
 use App\Mail\ResetPassword;
+
 use App\Models\KhachHang;
 use App\Jobs\MailQueue;
 use Illuminate\Support\Facades\Mail;
@@ -47,6 +48,91 @@ class KhachHangController extends Controller
                 'message' => 'Tạo tài khoản thành công. Vui lòng kiểm tra email để kích hoạt tài khoản.',
                 'khachhang' => $khachhang
             ], 201);
+        }
+    }
+    public function getLichSu(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        if ($user && $user instanceof KhachHang) {
+            $lichsu = DB::table('bookings')
+                ->select(
+                    'bookings.id',
+                    'bookings.id_homestay',
+                    'homestays.ten_homestay',
+                    'homestays.anh_chinh',
+                    'bookings.ngay_dat',
+                    'bookings.tong_tien',
+                    'bookings.is_thanh_toan',
+                    'bookings.ghi_chu',
+                    'chi_tiet_dat_phongs.ngay_nhan_phong',
+                    'chi_tiet_dat_phongs.ngay_tra_phong',
+                )
+                ->leftJoin('homestays', 'bookings.id_homestay', '=', 'homestays.id')
+                    ->leftJoin('chi_tiet_dat_phongs', 'bookings.id', '=', 'chi_tiet_dat_phongs.id_dat_phong')
+                ->where('bookings.id_khach_hang', $user->id)
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $lichsu
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa đăng nhập'
+            ], 401);
+        }
+    }
+    public function updateProfile(Request $request)
+    {
+        // Validate incoming request
+        $validator = Validator::make($request->all(), [
+            'ho_ten' => 'required|string|max:255',
+            'so_dien_thoai' => 'nullable|string|max:15|regex:/^([0-9\s\-\+\(\)]*)$/',
+            'ngay_sinh' => 'nullable|date|before:today',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Get authenticated customer
+            $customer = Auth::guard('sanctum')->user();
+
+            if (!$customer) {
+                return response()->json([
+                    'message' => 'Không tìm thấy người dùng'
+                ], 404);
+            }
+
+            // Update customer information
+            $customer->ho_ten = $request->input('ho_ten');
+            $customer->so_dien_thoai = $request->input('so_dien_thoai');
+            $customer->ngay_sinh = $request->input('ngay_sinh');
+            $customer->save();
+
+            return response()->json([
+                'message' => 'Cập nhật thông tin thành công',
+                'data' => [
+                    'id' => $customer->id,
+                    'ho_ten' => $customer->ho_ten,
+                    'email' => $customer->email,
+                    'so_dien_thoai' => $customer->so_dien_thoai,
+                    'ngay_sinh' => $customer->ngay_sinh,
+                    'avatar' => $customer->avatar
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Cập nhật thông tin thất bại',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -199,7 +285,7 @@ class KhachHangController extends Controller
                 ], 200);
             } catch (\Exception $e) {
                 // Ghi log lỗi để gỡ lỗi
-                \Log::error('Lỗi khi cập nhật ảnh đại diện: ' . $e->getMessage());
+                Log::error('Lỗi khi cập nhật ảnh đại diện: ' . $e->getMessage());
                 return response()->json([
                     'status' => false,
                     'message' => 'Không thể cập nhật ảnh đại diện: ' . $e->getMessage()
@@ -235,7 +321,7 @@ class KhachHangController extends Controller
     {
         $customer = KhachHang::where('email', $request->email)->first();
 
-        if (!$customer || !$customer->checkPassword($request->mat_khau)) {
+        if (!$customer || !Hash::check($request->mat_khau, $customer->mat_khau)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
@@ -262,7 +348,7 @@ class KhachHangController extends Controller
     {
         $user = Auth::guard('sanctum')->user();
 
-        if ($user && $user instanceof \App\Models\KhachHang) {
+        if ($user && $user instanceof KhachHang) {
             return response()->json([
                 'success' => true,
                 'data' => $user
@@ -320,19 +406,57 @@ class KhachHangController extends Controller
     // Thay đổi mật khẩu
     public function changePassword(Request $request)
     {
-        $request->validate([
+        // Validate request data
+        $validated = $request->validate([
             'current_password' => 'required|string',
             'new_password' => 'required|string|min:6|confirmed',
         ]);
 
+        // Lấy user đã xác thực qua guard 'sanctum'
         $customer = Auth::guard('sanctum')->user();
 
-        if (!Hash::check($request->current_password, $customer->mat_khau)) {
-            return response()->json(['message' => 'Current password is incorrect.'], 400);
+        // Kiểm tra xem user có tồn tại và là instance của model KhachHang không
+        if (!$customer || !($customer instanceof \App\Models\KhachHang)) {
+            return response()->json([
+                'message' => 'Unauthenticated or invalid user'
+            ], 401);
         }
 
-        $customer->update(['mat_khau' => $request->new_password]);
+        // Kiểm tra mật khẩu hiện tại
+        if (!Hash::check($validated['current_password'], $customer->mat_khau)) {
+            return response()->json([
+                'message' => 'Current password is incorrect.'
+            ], 400);
+        }
 
-        return response()->json(['message' => 'Password changed successfully.']);
+        // Cập nhật mật khẩu mới
+        $newPassword = Hash::make($validated['new_password']);
+        $customer->update(['mat_khau' => $newPassword]);
+
+        return response()->json([
+            'message' => 'Password changed successfully.'
+        ], 200);
     }
+    public function getBookingHistory(Request $request)
+{
+    $user = Auth::guard('sanctum')->user();
+    if ($user && $user instanceof KhachHang) {
+        $bookingHistory = DB::table('bookings')
+            ->join('homestays', 'bookings.id_homestay', '=', 'homestays.id')
+            ->where('bookings.id_khach_hang', $user->id)
+            ->select('bookings.*', 'homestays.anh_chinh')
+            ->orderBy('bookings.ngay_dat', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $bookingHistory
+        ]);
+    } else {
+        return response()->json([
+            'status' => false,
+            'message' => 'Chưa đăng nhập'
+        ], 401);
+    }
+}
 }

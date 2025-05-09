@@ -1,14 +1,14 @@
 <template>
     <div class="container mt-3">
-      <h4 class="mb-3">Quản lý dịch vụ</h4>
+      <h6 class="m-2 pt-2">Quản lý dịch vụ</h6>
       <div class=" d-lg-flex justify-content-between mb-1">
 		  <div class="position-relative">
 			<input type="text" class="form-control ps-5 radius-30" v-model="searchDichVu" placeholder="Tìm kiếm dịch vụ" />
 			<span class="position-absolute top-50 product-show translate-middle-y"><i class="bx bx-search"></i></span>
 		  </div>
 		  <div class="d-flex">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
-          <i class="bx bxs-plus-square"></i> Thêm dịch vụ
+        <button class="btn btn-primary radius-30" data-bs-toggle="modal" data-bs-target="#addModal">
+          <i class="bx bxs-plus-square"></i> Thêm
         </button>
 		  </div>
 		</div>
@@ -193,6 +193,7 @@
   
   <script>
 import axios from 'axios';
+import baseRequest from '../../core/baseRequest.js';
   export default {
     data() {
       return {
@@ -229,8 +230,8 @@ import axios from 'axios';
    ,
     methods: {
      getDichVu(){
-      axios
-      .get('http://127.0.0.1:8000/api/admin/dichvu/data')
+      baseRequest
+      .get('admin/dichvu/data')
       .then((response) => {
         this.listDichVu = response.data;
       })
@@ -239,8 +240,8 @@ import axios from 'axios';
       });
      },
      themDichVu(){
-      axios
-      .post('http://127.0.0.1:8000/api/admin/dichvu/store', this.create_dich_vu)
+      baseRequest
+      .post('admin/dichvu/store', this.create_dich_vu)
       .then((response) => {
         if(response.data.status){
           this.listDichVu.push(response.data);
@@ -263,8 +264,8 @@ import axios from 'axios';
       });
      },
      xoaDichVu(){
-      axios
-      .post('http://127.0.0.1:8000/api/admin/dichvu/delete', this.delete_dich_vu)
+      baseRequest
+      .post('/admin/dichvu/delete', this.delete_dich_vu)
       .then((response)=>{
         if(response.data.status){
           this.getDichVu();
@@ -280,8 +281,8 @@ import axios from 'axios';
       });
      },
      capnhatDichVu(){
-      axios
-      .post('http://127.0.0.1:8000/api/admin/dichvu/update', this.update_dich_vu)
+      baseRequest
+      .post('admin/dichvu/update', this.update_dich_vu)
       .then((response)=>{
         if(response.data.status){
           this.getDichVu();
