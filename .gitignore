@@ -1,0 +1,14 @@
+# Bỏ qua thư mục node_modules (cho frontend)
+node_modules/
+
+# Bỏ qua tệp biến môi trường
+.env
+
+# Bỏ qua thư mục vendor (cho backend, nếu dùng Laravel)
+vendor/
+
+# Bỏ qua các thư mục build/output
+dist/
+public/storage/
+storage/*
+!storage/.gitkeep

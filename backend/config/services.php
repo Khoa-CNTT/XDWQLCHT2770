@@ -13,6 +13,13 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'payos' => [
+    'client_id' => env('PAYOS_CLIENT_ID'),
+    'api_key' => env('PAYOS_API_KEY'),
+    'checksum_key' => env('PAYOS_CHECKSUM_KEY'),
+    'return_url' => env('PAYOS_RETURN_URL'),
+    'cancel_url' => env('PAYOS_CANCEL_URL'),
+],
 
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),

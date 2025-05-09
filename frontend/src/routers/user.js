@@ -1,3 +1,5 @@
+import HomestayDetail from "../pages/pageUser/HomestayDetail.vue";
+
 export default [
   {
     path: "/",
@@ -38,9 +40,10 @@ export default [
         component: () => import("../pages/pageUser/Register.vue"),
       },
       {
-        path: "postdetail",
-        name: "PostDetail",
-        component: () => import("../pages/pageUser/PostDetails.vue"), 
+        path: '/bai-viet/:id',
+        name: 'ChiTietBaiViet',
+        component: ()=> import("../pages/PageUser/PostDetails.vue"),
+        props: true
       },
       {
         path: "profile",
@@ -53,9 +56,11 @@ export default [
         component: () => import("../pages/pageUser/SearchHomestay.vue"), 
       },
       {
-        path: "bookingdetail",
-        name: "BookingDetail",
-        component: () => import("../pages/pageUser/BookingDetails.vue"), 
+        path: '/homestay/:id',
+        name: 'HomestayDetail',
+        component: () => import("../pages/pageUser/HomestayDetail.vue"),
+        props: true,
+        
       },
       {
         path: "payment",
@@ -78,6 +83,12 @@ export default [
         name: "About",
         component: () => import("../pages/pageUser/About.vue"),
       },
+      {
+        path: "bookingdetail",
+        name: "BookingDetail",
+        component: () => import("../pages/pageUser/BookingDetails.vue"),
+      },
+      
     ],
   },
 ];

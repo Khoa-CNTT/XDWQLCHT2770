@@ -83,7 +83,8 @@
 <script>
 import { useUserStore } from '../../stores/usesStore.js';
 import { useRouter } from 'vue-router';
-
+import { createToaster } from "@meforma/vue-toaster";
+const toaster = createToaster({ position: "top-right", duration: 3000 });
 export default {
   setup() {
     const userStore = useUserStore();
@@ -120,9 +121,10 @@ export default {
           email: this.form.email,
           password: this.form.mat_khau,
         });
+        toaster.success= ('Đăng nhập thành công');
         this.router.push('/'); // Chuyển hướng sau khi đăng nhập thành công
       } catch (error) {
-        this.error = error.message;
+        toaster.error = (error.response.data.message || "Đăng nhập thất bại");
       } finally {
         this.isLoading = false;
       }

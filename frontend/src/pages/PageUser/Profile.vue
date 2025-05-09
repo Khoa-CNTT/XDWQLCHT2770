@@ -27,7 +27,7 @@
                     type="file"
                     accept="image/*"
                     @change="handleAvatarChange"
-                    style="display: none;"
+                    style="display: none"
                   />
                 </div>
                 <div class="mt-3">
@@ -43,15 +43,20 @@
                   <h6 class="mb-0">
                     <i class="fa-solid fa-envelope me-2"></i>Email
                   </h6>
-                  <span class="text-secondary">{{ customer?.email || "Chưa cập nhật" }}</span>
+                  <span class="text-secondary">{{
+                    customer?.email || "Chưa cập nhật"
+                  }}</span>
                 </li>
                 <li
                   class="list-group-item d-flex justify-content-between align-items-center flex-wrap"
                 >
                   <h6 class="mb-0">
-                    <i class="fa-solid fa-mobile-screen-button me-2"></i>Số điện thoại
+                    <i class="fa-solid fa-mobile-screen-button me-2"></i>Số điện
+                    thoại
                   </h6>
-                  <span class="text-secondary">{{ customer?.so_dien_thoai || "Chưa cập nhật" }}</span>
+                  <span class="text-secondary">{{
+                    customer?.so_dien_thoai || "Chưa cập nhật"
+                  }}</span>
                 </li>
                 <li
                   class="list-group-item d-flex justify-content-between align-items-center flex-wrap"
@@ -59,7 +64,9 @@
                   <h6 class="mb-0">
                     <i class="fa-solid fa-cake-candles me-2"></i>Ngày sinh
                   </h6>
-                  <span class="text-secondary">{{ customer?.ngay_sinh || "Chưa cập nhật" }}</span>
+                  <span class="text-secondary">{{
+                    customer?.ngay_sinh || "Chưa cập nhật"
+                  }}</span>
                 </li>
               </ul>
               <hr />
@@ -79,6 +86,95 @@
                   <i class="fa-solid fa-key"></i> Đổi mật khẩu
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header">
+              <h5>Lịch sử đặt phòng</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <template v-for="(value, index) in booking" :key="index">
+                  <div class="col-lg-6">
+                    <div class="card" style="width: 100%">
+                      <img
+                        :src="`${this.backendBaseUrl}${value.anh_chinh}`"
+                        class="card-img-top"
+                        style="height: 200px; object-fit: cover"
+                        alt="..."
+                      />
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                          <h5 class="card-title">{{ value.ten_homestay }}</h5>
+                          <div>
+                            <span
+                              v-if="value.is_thanh_toan == 1"
+                              class="badge bg-success"
+                              >Đã thanh toán</span
+                            >
+                            <span v-else class="badge bg-danger"
+                              >Thanh toán ngay</span
+                            >
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-4">
+                            <h6>Check-in</h6>
+                            <p>{{ value.ngay_nhan_phong }}</p>
+                          </div>
+                          <div class="col-4">
+                            <h6>Check-out</h6>
+                            <p>{{ value.ngay_tra_phong }}</p>
+                          </div>
+                          <div class="col-4 text-end">
+                            <a class="w-100 text-align-middle"
+                              ><i
+                                class="fa-solid fa-circle-info"
+                                style="color: #062d62; font-size: 1.2rem"
+                              ></i>
+                              xem chi tiết</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+
+              <table class="table table-bordered table-reponse">
+                <thead>
+                  <tr>
+                    <th>Mã đặt phòng</th>
+                    <th>Homestay</th>
+                    <th>Ngày đặt phòng</th>
+                    <th>Tổng tiền</th>
+                    <th>Thanh toán</th>
+                    <th>Ghi chú</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(booking, index) in booking" :key="index">
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.ten_homestay }}</td>
+                    <td>{{ booking.ngay_dat }}</td>
+                    <td>{{ booking.tong_tien.toLocaleString() }} VNĐ</td>
+                    <td>
+                      <span
+                        v-if="booking.is_thanh_toan == 1"
+                        class="badge bg-success"
+                        >Đã thanh toán</span
+                      >
+                      <span v-else class="badge bg-danger"
+                        >Thanh toán ngay</span
+                      >
+                    </td>
+                    <td>{{ booking.ghi_chu || "Không có ghi chú" }}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -138,7 +234,12 @@
                 />
               </div>
               <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  data-bs-dismiss="modal"
+                  :disabled="isLoading"
+                >
                   {{ isLoading ? "Đang lưu..." : "Lưu thay đổi" }}
                 </button>
                 <button
@@ -150,7 +251,6 @@
                   Hủy
                 </button>
               </div>
-              <p class="text-danger mt-2" v-if="profileError">{{ profileError }}</p>
             </form>
           </div>
         </div>
@@ -182,7 +282,9 @@
           <div class="modal-body">
             <form @submit.prevent="submitPassword">
               <div class="mb-3">
-                <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+                <label for="currentPassword" class="form-label"
+                  >Mật khẩu hiện tại</label
+                >
                 <input
                   v-model="password.current"
                   type="password"
@@ -202,7 +304,9 @@
                 />
               </div>
               <div class="mb-3">
-                <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+                <label for="confirmPassword" class="form-label"
+                  >Xác nhận mật khẩu mới</label
+                >
                 <input
                   v-model="password.confirm"
                   type="password"
@@ -212,7 +316,11 @@
                 />
               </div>
               <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  :disabled="isLoading"
+                >
                   {{ isLoading ? "Đang đổi..." : "Đổi mật khẩu" }}
                 </button>
                 <button
@@ -224,7 +332,9 @@
                   Hủy
                 </button>
               </div>
-              <p class="text-danger mt-2" v-if="passwordError">{{ passwordError }}</p>
+              <p class="text-danger mt-2" v-if="passwordError">
+                {{ passwordError }}
+              </p>
             </form>
           </div>
         </div>
@@ -234,10 +344,14 @@
 </template>
 
 <script>
-import { useUserStore } from '../../stores/usesStore.js';
-import { useRouter } from 'vue-router';
-import api from '../../services/api.js';
-
+import { useUserStore } from "../../stores/usesStore.js";
+import { useRouter } from "vue-router";
+import api from "../../services/api.js";
+import { createToaster } from "@meforma/vue-toaster";
+const toaster = createToaster({
+  position: "bottom-right",
+  duration: 3000,
+});
 export default {
   setup() {
     const userStore = useUserStore();
@@ -246,18 +360,21 @@ export default {
   },
   data() {
     return {
+      bookings: [],
       editProfile: {
-        fullName: '',
-        phone: '',
-        dob: '',
+        fullName: "",
+        phone: "",
+        dob: "",
       },
+
       password: {
-        current: '',
-        new: '',
-        confirm: '',
+        current: "",
+        new: "",
+        confirm: "",
       },
-      defaultAvatar: 'https://i.pinimg.com/474x/4f/b1/6a/4fb16af4177b0e7bfcbc0423a3267a8a.jpg',
-      backendBaseUrl: 'http://127.0.0.1:8000/storage/',
+      defaultAvatar:
+        "https://i.pinimg.com/474x/4f/b1/6a/4fb16af4177b0e7bfcbc0423a3267a8a.jpg",
+      backendBaseUrl: "http://127.0.0.1:8000/storage/",
       isLoading: false,
       profileError: null,
       passwordError: null,
@@ -273,12 +390,26 @@ export default {
         : this.defaultAvatar;
     },
   },
- 
+  mounted() {
+    this.checkAuthentication();
+    this.getLichSuDatPhong();
+  },
   methods: {
+    getLichSuDatPhong() {
+      api
+        .post("/lich-su-dat-phong")
+        .then((response) => {
+          this.booking = response.data.data;
+          console.log("Lịch sử đặt phòng:", this.booking);
+        })
+        .catch((error) => {
+          console.error("Lỗi khi lấy lịch sử đặt phòng:", error);
+        });
+    },
     async checkAuthentication() {
       await this.userStore.initializeAuth();
       if (!this.userStore.isLoggedIn) {
-        this.router.push('/login');
+        this.router.push("/login");
       } else {
         if (!this.userStore.getCustomer) {
           await this.userStore.fetchProfile();
@@ -288,35 +419,37 @@ export default {
     },
     loadCustomerInfo() {
       this.editProfile = {
-        fullName: this.customer?.ho_ten || '',
-        phone: this.customer?.so_dien_thoai || '',
-        dob: this.customer?.ngay_sinh || '',
+        fullName: this.customer?.ho_ten || "",
+        phone: this.customer?.so_dien_thoai || "",
+        dob: this.customer?.ngay_sinh || "",
       };
     },
     async handleAvatarChange(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      if (!file.type.match('image.*')) {
-        alert('Vui lòng chọn một file ảnh!');
+      if (!file.type.match("image.*")) {
+        toaster.error("Vui lòng chọn một tệp hình ảnh!");
         return;
       }
 
       this.isLoading = true;
       const formData = new FormData();
-      formData.append('avatar', file);
+      formData.append("avatar", file);
 
       try {
-        const response = await api.post('/update-avatar', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        const response = await api.post("/update-avatar", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
         this.userStore.customer.avatar = response.data.avatar;
         await this.userStore.fetchProfile();
         this.loadCustomerInfo();
-        alert('Cập nhật ảnh đại diện thành công!');
+        toaster.success("Cập nhật ảnh đại diện thành công!");
       } catch (error) {
-        alert(error.response?.data?.message || 'Cập nhật ảnh đại diện thất bại!');
-        console.error('Lỗi khi cập nhật avatar:', error);
+        toaster.error(
+          error.response?.data?.message || "Cập nhật ảnh đại diện thất bại!"
+        );
+        console.error("Lỗi khi cập nhật avatar:", error);
       } finally {
         this.isLoading = false;
       }
@@ -325,77 +458,132 @@ export default {
       event.target.src = this.defaultAvatar;
     },
     async submitProfile() {
-      if (!this.editProfile.fullName) {
-        this.profileError = 'Họ tên là bắt buộc!';
+      // Validate inputs
+      if (!this.editProfile.fullName.trim()) {
+        this.profileError = "Họ tên là bắt buộc!";
         return;
+      }
+
+      // Validate phone number format if provided
+      if (
+        this.editProfile.phone &&
+        !/^\+?\d{9,15}$/.test(this.editProfile.phone)
+      ) {
+        this.profileError = "Số điện thoại không hợp lệ!";
+        return;
+      }
+
+      // Validate date of birth if provided
+      if (this.editProfile.dob) {
+        const today = new Date();
+        const dob = new Date(this.editProfile.dob);
+        if (dob >= today) {
+          this.profileError = "Ngày sinh không hợp lệ!";
+          return;
+        }
       }
 
       this.isLoading = true;
       this.profileError = null;
+
       try {
-        const response = await api.post('/update-profile', {
-          ho_ten: this.editProfile.fullName,
-          so_dien_thoai: this.editProfile.phone,
-          ngay_sinh: this.editProfile.dob,
+        const response = await api.post("/cap-nhat-thong-tin", {
+          ho_ten: this.editProfile.fullName.trim(),
+          so_dien_thoai: this.editProfile.phone || null,
+          ngay_sinh: this.editProfile.dob || null,
         });
+
+        // Update store with new customer data
         this.userStore.customer = response.data.data;
-        alert('Cập nhật thông tin thành công!');
-        document.querySelector('#editProfileModal .btn-close').click();
+
+        // Refresh profile data
+        await this.userStore.fetchProfile();
+
+        // Show success notification
+        toaster.success("Cập nhật thông tin thành công!");
+
+        // Reset form
+        this.resetProfileForm();
       } catch (error) {
-        this.profileError = error.response?.data?.message || 'Cập nhật thông tin thất bại!';
-        console.error('Lỗi khi cập nhật profile:', error);
+        this.profileError =
+          error.response?.data?.message || "Cập nhật thông tin thất bại!";
+        toaster.error(this.profileError);
+        console.error("Lỗi khi cập nhật profile:", error);
       } finally {
         this.isLoading = false;
       }
     },
     resetProfileForm() {
       this.editProfile = {
-        fullName: this.customer?.ho_ten || '',
-        phone: this.customer?.so_dien_thoai || '',
-        dob: this.customer?.ngay_sinh || '',
+        fullName: this.customer?.ho_ten || "",
+        phone: this.customer?.so_dien_thoai || "",
+        dob: this.customer?.ngay_sinh || "",
       };
       this.profileError = null;
     },
     async submitPassword() {
-      if (!this.password.current || !this.password.new || !this.password.confirm) {
-        this.passwordError = 'Vui lòng điền đầy đủ thông tin!';
+      // Kiểm tra các trường bắt buộc
+      if (
+        !this.password.current ||
+        !this.password.new ||
+        !this.password.confirm
+      ) {
+        this.passwordError = "Vui lòng điền đầy đủ thông tin!";
         return;
       }
+
+      // Kiểm tra độ dài mật khẩu
       if (this.password.new.length < 6) {
-        this.passwordError = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
+        this.passwordError = "Mật khẩu mới phải có ít nhất 6 ký tự!";
         return;
       }
+
+      // Kiểm tra khớp mật khẩu
       if (this.password.new !== this.password.confirm) {
-        this.passwordError = 'Mật khẩu xác nhận không khớp!';
+        this.passwordError = "Mật khẩu xác nhận không khớp!";
         return;
       }
 
       this.isLoading = true;
       this.passwordError = null;
+
       try {
-        await api.post('/change-password', {
+        // Log dữ liệu gửi đi để kiểm tra
+        const payload = {
           current_password: this.password.current,
           new_password: this.password.new,
           new_password_confirmation: this.password.confirm,
-        });
-        alert('Đổi mật khẩu thành công!');
+        };
+        console.log("Sending payload:", payload);
+
+        const response = await api.post("/change-password", payload);
+        toaster.success("Đổi mật khẩu thành công!");
         this.resetPasswordForm();
-        document.querySelector('#changePasswordModal .btn-close').click();
+        document.querySelector("#changePasswordModal .btn-close").click();
       } catch (error) {
-        this.passwordError = error.response?.data?.message || 'Đổi mật khẩu thất bại!';
-        console.error('Lỗi khi đổi mật khẩu:', error);
+        this.passwordError =
+          error.response?.data?.message || "Đổi mật khẩu thất bại!";
+        console.error("Lỗi khi đổi mật khẩu:", error.response?.data);
       } finally {
         this.isLoading = false;
       }
     },
     resetPasswordForm() {
       this.password = {
-        current: '',
-        new: '',
-        confirm: '',
+        current: "",
+        new: "",
+        confirm: "",
       };
       this.passwordError = null;
     },
+  },
+  resetPasswordForm() {
+    this.password = {
+      current: "",
+      new: "",
+      confirm: "",
+    };
+    this.passwordError = null;
   },
 };
 </script>

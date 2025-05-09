@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Đăng ký alias để sử dụng trong route
         $middleware->alias([
             'khachhang' => \App\Http\Middleware\KhachHangMiddle::class,
+            'admin' => \App\Http\Middleware\NhanVienMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

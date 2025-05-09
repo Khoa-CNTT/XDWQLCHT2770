@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'khach_hang',
         ],
+        'nhan_vien' => [
+            'driver' => 'sanctum',
+            'provider' => 'nhan_vien',
+        ],
     ],
 
     /*
@@ -72,6 +76,10 @@ return [
         'khach_hang' => [
             'driver' => 'eloquent',
             'model' => App\Models\KhachHang::class,
+        ],
+        'nhan_vien' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\NhanVien::class,
         ],
     ],
 

@@ -31,10 +31,7 @@ class KhachHang extends Authenticatable
 
     protected $hidden = ['mat_khau', 'hash_active', 'hash_reset'];
 
-    
 
-    public function checkPassword($password)
-    {
-        return Hash::check($password, $this->mat_khau);
-    }
+
+    
 }
