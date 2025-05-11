@@ -155,52 +155,61 @@ class QLBookingController extends Controller
             $checkOut = $data['check_out'];
             $sucChua = $data['suc_chua'];
 
-            $homestays = Homestay::where('tinh_trang', 1)->get();
-
-            $availableHomestays = $homestays->map(function ($homestay) use ($checkIn, $checkOut, $sucChua) {
-                $availableRooms = $homestay->phongs()
-                    ->where('trang_thai', 1)
-                    ->whereDoesntHave('chiTietDatPhongs', function ($q) use ($checkIn, $checkOut) {
-                        $q->where(function ($subQuery) use ($checkIn, $checkOut) {
-                            $subQuery->whereBetween('ngay_nhan_phong', [$checkIn, $checkOut])
-                                     ->orWhereBetween('ngay_tra_phong', [$checkIn, $checkOut])
-                                     ->orWhereRaw('? BETWEEN ngay_nhan_phong AND ngay_tra_phong', [$checkIn])
-                                     ->orWhereRaw('? BETWEEN ngay_nhan_phong AND ngay_tra_phong', [$checkOut]);
+            $availableHomestays = Homestay::where('tinh_trang', 1)
+                ->get()
+                ->map(function ($homestay) use ($checkIn, $checkOut, $sucChua) {
+                    $availableRooms = $homestay->phongs()
+                        ->where('trang_thai', 1)
+                        ->whereDoesntHave('chiTietDatPhongs', function ($query) use ($checkIn, $checkOut) {
+                            $query->where(function ($subQuery) use ($checkIn, $checkOut) {
+                                $subQuery->whereBetween('ngay_nhan_phong', [$checkIn, $checkOut])
+                                    ->orWhereBetween('ngay_tra_phong', [$checkIn, $checkOut])
+                                    ->orWhereRaw('? BETWEEN ngay_nhan_phong AND ngay_tra_phong', [$checkIn])
+                                    ->orWhereRaw('? BETWEEN ngay_nhan_phong AND ngay_tra_phong', [$checkOut]);
+                            });
+                        })
+                        ->get()
+                        ->map(function ($phong) {
+                            return [
+                                'id' => $phong->id,
+                                'ten_phong' => $phong->ten_phong,
+                                'suc_chua' => $phong->suc_chua,
+                                'gia' => $phong->gia,
+                            ];
                         });
-                    })
-                    ->get()
-                    ->map(function ($phong) {
+
+                    if ($availableRooms->sum('suc_chua') >= $sucChua) {
                         return [
-                            'id' => $phong->id,
-                            'ten_phong' => $phong->ten_phong,
-                            'suc_chua' => $phong->suc_chua,
-                            'gia' => $phong->gia,
+                            'id' => $homestay->id,
+                            'ten_homestay' => $homestay->ten_homestay,
+                            'available_rooms' => $availableRooms,
+                            'total_capacity' => $availableRooms->sum('suc_chua'),
                         ];
-                    });
-
-                $totalCapacity = $availableRooms->sum('suc_chua');
-
-                if ($totalCapacity >= $sucChua) {
-                    return [
-                        'id' => $homestay->id,
-                        'ten_homestay' => $homestay->ten_homestay,
-                        'available_rooms' => $availableRooms,
-                    ];
-                }
-                return null;
-            })->filter()->values();
+                    }
+                    return null;
+                })
+                ->filter()
+                ->values();
 
             if ($availableHomestays->isEmpty()) {
                 return response()->json([
+                    'status' => 'error',
                     'message' => 'Không tìm thấy homestay có phòng trống phù hợp',
+                    'data' => [],
                 ], 404, [], JSON_UNESCAPED_UNICODE);
             }
 
-            return response()->json($availableHomestays, 200, [], JSON_UNESCAPED_UNICODE);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Danh sách homestay có phòng trống',
+                'data' => $availableHomestays,
+            ], 200, [], JSON_UNESCAPED_UNICODE);
         } catch (\Exception $e) {
             return response()->json([
+                'status' => 'error',
                 'message' => 'Lỗi khi kiểm tra phòng trống',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'data' => [],
             ], 500, [], JSON_UNESCAPED_UNICODE);
         }
     }
@@ -280,7 +289,7 @@ class QLBookingController extends Controller
                     'gia' => $roomPrice,
                     'ghi_chu' => $room['ghi_chu'] ?? null,
                     'check_out_thuc_te' => $room['checkOut'],
-                    'tinh_trang' => 'pending',
+                    'tinh_trang' => 1,
                 ]);
             }
 

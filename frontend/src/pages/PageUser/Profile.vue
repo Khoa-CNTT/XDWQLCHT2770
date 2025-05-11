@@ -144,37 +144,7 @@
                 </template>
               </div>
 
-              <table class="table table-bordered table-reponse">
-                <thead>
-                  <tr>
-                    <th>Mã đặt phòng</th>
-                    <th>Homestay</th>
-                    <th>Ngày đặt phòng</th>
-                    <th>Tổng tiền</th>
-                    <th>Thanh toán</th>
-                    <th>Ghi chú</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(booking, index) in booking" :key="index">
-                    <td>{{ booking.id }}</td>
-                    <td>{{ booking.ten_homestay }}</td>
-                    <td>{{ booking.ngay_dat }}</td>
-                    <td>{{ booking.tong_tien.toLocaleString() }} VNĐ</td>
-                    <td>
-                      <span
-                        v-if="booking.is_thanh_toan == 1"
-                        class="badge bg-success"
-                        >Đã thanh toán</span
-                      >
-                      <span v-else class="badge bg-danger"
-                        >Thanh toán ngay</span
-                      >
-                    </td>
-                    <td>{{ booking.ghi_chu || "Không có ghi chú" }}</td>
-                  </tr>
-                </tbody>
-              </table>
+             
             </div>
           </div>
         </div>
